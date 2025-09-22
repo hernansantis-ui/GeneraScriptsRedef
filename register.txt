@@ -1,0 +1,4 @@
+cffi==2.0.0
+cryptography==46.0.1
+oracledb==3.3.0
+pycparser==2.23

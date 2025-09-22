@@ -1,0 +1,112 @@
+-- GENERA ROLLBACK  TABLA
+
+-- Se renombra TABLA como TMP_TABLA
+-- Se renombre INT_TABLA como TABLA
+-- Se renombram indices, constraints y trigges
+set serveroutput on
+declare
+
+        nombre_old      varchar2(400);
+        nombre_new      varchar2(400);
+        sqlstmnt        varchar2(400);
+begin
+    for i in (select index_name from all_indexes where table_name='TABLA' and owner='ESQUEMA')
+    loop
+        nombre_old := i.index_name;
+        nombre_new := 'T_'||nombre_old;
+        
+        sqlstmnt := 'alter index ESQUEMA.'||nombre_old||' rename to '||nombre_new;
+        
+        execute immediate sqlstmnt;
+        
+    end loop;    
+
+    for i in (select trigger_name from all_triggers where table_name='TABLA' and owner='ESQUEMA')
+    loop
+        nombre_old := i.trigger_name;
+        nombre_new := 'T_'||nombre_old;
+        
+        sqlstmnt := 'alter trigger ESQUEMA.'||nombre_old||' rename to '||nombre_new;
+        
+        execute immediate sqlstmnt;
+        
+    end loop;    
+    for i in (select constraint_name from all_constraints where table_name='TABLA' and owner='ESQUEMA')
+    loop
+        nombre_old := i.constraint_name;
+        nombre_new := 'T_'||nombre_old;
+        
+        sqlstmnt := 'alter table ESQUEMA.TABLA rename constraint '||nombre_old||'  to '||nombre_new;
+        
+        execute immediate sqlstmnt;
+        
+    end loop;    
+    
+-- Cambiamos los nombres de indices, triggers y constraints de la tabla INTERINA
+    for i in (select index_name from all_indexes where table_name='I_TABLA' and owner='ESQUEMA')
+    loop
+        nombre_old := i.index_name;
+        nombre_new := substr(substr(nombre_old,7),1,length(substr(nombre_old,7))-1);
+        
+        sqlstmnt := 'alter index ESQUEMA.'||nombre_old||' rename to '||nombre_new;
+        
+        execute immediate sqlstmnt;
+        
+    end loop;    
+
+    for i in (select trigger_name from all_triggers where table_name='I_TABLA' and owner='ESQUEMA')
+    loop
+        nombre_old := i.trigger_name;
+        nombre_new := substr(substr(nombre_old,7),1,length(substr(nombre_old,7))-1);
+        
+        sqlstmnt := 'alter trigger ESQUEMA.'||nombre_old||' rename to '||nombre_new;
+        
+        execute immediate sqlstmnt;
+        
+    end loop;    
+    for i in (select constraint_name from all_constraints where table_name='I_TABLA' and owner='ESQUEMA')
+    loop
+        nombre_old := i.constraint_name;
+        nombre_new := substr(substr(nombre_old,7),1,length(substr(nombre_old,7))-1);
+        
+        sqlstmnt := 'alter table ESQUEMA.TABLA rename constraint '||nombre_old||'  to '||nombre_new;
+        
+        execute immediate sqlstmnt;
+        
+    end loop;    
+
+-- Renombramos las tablas TABLA --> TMP_TABLA e I_TABLA --> TABLA
+    
+
+    execute immediate 'RENAME  ESQUEMA.TABLA TO TMP_TABLA';
+    execute immediate 'RENAME ESQUEMA.I_TABLA TO TABLA';
+-- Borramos la tabla TMP_TABLA
+    execute immediate 'DROP TABLE TMP_TABLA CASCADE CONSTRAINTS PURGE';
+
+exception
+    when others then 
+        dbms_output.put_line('Error TABLA: '||SQLERRM);
+
+
+end;
+/
+exit
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

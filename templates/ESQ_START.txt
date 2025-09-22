@@ -1,0 +1,34 @@
+ALTER SESSION FORCE PARALLEL DML parallel paralelo;
+ALTER SESSION FORCE PARALLEL QUERY parallel paralelo;
+ALTER SESSION FORCE PARALLEL DDL parallel paralelo;
+-- Genera START REDEFINITION TABLA
+set serveroutput on
+
+BEGIN
+   DBMS_OUTPUT.NEW_LINE;
+   DBMS_OUTPUT.PUT_LINE('Inicio: ' || TO_CHAR(SYSDATE,'YYYY/MM/DD  HH24:MI:SS'));
+
+   DBMS_REDEFINITION.START_REDEF_TABLE(
+                                       uname      => 'ESQUEMA' , 
+				                           orig_table => 'TABLA' , 
+				                           int_table  => 'I_TABLA' , 
+				                           col_mapping => NULL , 
+				                           options_flag => DBMS_REDEFINITION.CONS_USE_ROWID
+				                            );
+
+   DBMS_OUTPUT.PUT_LINE('Proceso START TABLA : OK');
+   DBMS_OUTPUT.PUT_LINE('Finalización: ' || TO_CHAR(SYSDATE,'YYYY/MM/DD  HH24:MI:SS'));
+   DBMS_OUTPUT.NEW_LINE;
+
+
+EXCEPTION
+   WHEN OTHERS THEN
+      DBMS_OUTPUT.PUT_LINE('Proceso START TABLA con error '||SQLERRM);
+      DBMS_OUTPUT.PUT_LINE('Finalización: ' || TO_CHAR(SYSDATE,'YYYY/MM/DD  HH24:MI:SS'));
+      DBMS_OUTPUT.NEW_LINE;
+  
+END;
+/
+ALTER TABLE I_TABLA MODIFY(NOPARALLEL) ;
+
+EXIT

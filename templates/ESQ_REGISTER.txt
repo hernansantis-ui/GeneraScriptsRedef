@@ -1,0 +1,26 @@
+-- Genera REGISTER INDICE
+BEGIN
+    DBMS_OUTPUT.NEW_LINE;
+    DBMS_OUTPUT.PUT_LINE('Inicio: ' || TO_CHAR(SYSDATE,'YYYY/MM/DD  HH24:MI:SS'));
+
+
+	DBMS_REDEFINITION.REGISTER_DEPENDENT_OBJECT(
+	                                            uname      =>'ESQUEMA' ,
+	                                            orig_table => 'TABLA',
+	                                            int_table  => 'I_TABLA',
+		                                        dep_type   => DBMS_REDEFINITION.CONS_INDEX,
+		                                        dep_owner     => 'ESQUEMA',
+		                                        dep_orig_name => 'INDICE',
+			                                    dep_int_name  => 'I_INDICE');
+
+    DBMS_OUTPUT.PUT_LINE('Proceso REGISTER INDICE : OK');
+    DBMS_OUTPUT.PUT_LINE('Finalización: ' || TO_CHAR(SYSDATE,'YYYY/MM/DD  HH24:MI:SS'));
+    DBMS_OUTPUT.NEW_LINE;
+
+EXCEPTION
+   	WHEN others then
+		DBMS_OUTPUT.PUT_LINE('Proceso REGISTER  INDICE  con error: '||SQLERRM);
+		DBMS_OUTPUT.PUT_LINE('Finalización: ' || TO_CHAR(SYSDATE,'YYYY/MM/DD  HH24:MI:SS'));
+        DBMS_OUTPUT.NEW_LINE;
+END;
+/
