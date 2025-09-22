@@ -13,6 +13,8 @@ import oracledb
 import re
 import logging
 from Utils.valida_configuracion import valida_archivo_config
+from Utils.utilitarios    import conecta_db,get_parametros_tbs,get_parametros_tablas
+
 scripts = [
     ("00", "CAN_REDEF"),
     ("01", "CREA_I"),
@@ -28,21 +30,21 @@ scripts = [
 ]
 
 
-def conecta_db(config):
-    servidor = config.get('Database','servidor')
-    puerto = config.getint('Database','port')
-    servicio = config.get('Database','servicio')
-    usuario = config.get('Database','usuario')
-    clave = config.get('Database','clave')
+# def conecta_db(config):
+#     servidor = config.get('Database','servidor')
+#     puerto = config.getint('Database','port')
+#     servicio = config.get('Database','servicio')
+#     usuario = config.get('Database','usuario')
+#     clave = config.get('Database','clave')
 
-    conecta = oracledb.connect(
-        user=usuario,
-        password=clave,
-        host=servidor,
-        port=puerto,
-        service_name=servicio,
-    )
-    return conecta
+#     conecta = oracledb.connect(
+#         user=usuario,
+#         password=clave,
+#         host=servidor,
+#         port=puerto,
+#         service_name=servicio,
+#     )
+#     return conecta
 
 # Crea la estructura de directorios para almacenar los scripts
 
@@ -233,36 +235,39 @@ def obtener_lista_indices(conexion,esquema,tabla):
     return lista
 
 
-def main(config):
+def main(config,logger):
     
-    conexion = conecta_db(config)
-
-    # Por cada tabla en el archivo de configuración procesamos la informacion
-    sid_db = config.get('Database','servicio')
-
-    parallel = int(config.get('Tablespaces','paralelo'))
-    habilita = config.getboolean('Tablespaces','habilita_cambio')
-    if habilita:
-        tablespace_tabla = config.get('Tablespaces','tablespace_tabla')
-        tablespace_index = config.get('Tablespaces','tablespace_indice')
-        if len(tablespace_tabla) == 0 :
-            tablespace_tabla=None
-        if len(tablespace_index) == 0 :
-            tablespace_index=None
-    else:
-        tablespace_tabla=None
-        tablespace_index=None
+    
+    conexion = conecta_db(config,logger)
+    
+    sid_db,parallel,habilita,tablespace_tabla,tablespace_index = get_parametros_tbs(config)
+    # sid_db = config.get('Database','servicio')
+    # parallel = int(config.get('Tablespaces','paralelo'))
+    # habilita = config.getboolean('Tablespaces','habilita_cambio')
+    # if habilita:
+    #     tablespace_tabla = config.get('Tablespaces','tablespace_tabla')
+    #     tablespace_index = config.get('Tablespaces','tablespace_indice')
+    #     if len(tablespace_tabla) == 0 :
+    #         tablespace_tabla=None
+    #     if len(tablespace_index) == 0 :
+    #         tablespace_index=None
+    # else:
+    #     tablespace_tabla=None
+    #     tablespace_index=None
 
     opciones = config.options('Tablas')
     for opt in opciones:
-        esquema = opt.split('.')[0].upper()
-        tabla = opt.split('.')[1].upper()
-        valores = config.get('Tablas',opt)
-        if len(valores) > 0: 
-            columnas = [col.strip() for col in config.get('Tablas',opt).split(',')]
-        else:
-            columnas=[]    
-        
+        esquema,tabla,valores,columnas = get_parametros_tablas(config,opt)
+        # esquema = opt.split('.')[0].upper()
+        # tabla = opt.split('.')[1].upper()
+        # valores = config.get('Tablas',opt)
+        # if len(valores) > 0: 
+        #     columnas = [col.strip() for col in config.get('Tablas',opt).split(',')]
+        # else:
+        #     columnas=[]    
+        logger.debug(f"Procesando tabla {esquema}.{tabla} columnas a encriptar {columnas}")
+
+        # Creamos la estructura de directorios        
         crea_directorio("SQL", sid_db, esquema, tabla)
 
         for orden, tipo in scripts:
@@ -328,4 +333,4 @@ if __name__ == "__main__":
     dir_proyecto = Path.cwd()
     config = ConfigParser()
     config = valida_archivo_config(logger)
-    main(config)
+    main(config,logger)
