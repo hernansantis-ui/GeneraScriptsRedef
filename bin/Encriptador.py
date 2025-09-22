@@ -12,7 +12,7 @@ import sys
 import oracledb
 import re
 import logging
-
+from Utils.valida_configuracion import valida_archivo_config
 scripts = [
     ("00", "CAN_REDEF"),
     ("01", "CREA_I"),
@@ -44,110 +44,7 @@ def conecta_db(config):
     )
     return conecta
 
-def  valida_secciones(config):
-    l_error = False
-    if not config.has_section('Database'):
-        print('Archivo encriptador.cfg debe contener una seccion [Database]')
-        l_error = True
-    elif not config.has_section('Tablespaces'):
-        print('Archivo encriptador.cfg debe contener una seccion [Tablespace]')
-        l_error = True
-    elif not config.has_section('Tablas'):
-        print('Archivo encriptador.cfg debe contener una seccion [Tablas]')
-        l_error = True
-    if l_error :    
-        raise SystemExit()
-
-def valida_seccion_db(config):
-    l_error = False
-    opciones = config.options('Database')
-
-    if not opciones:
-        print(f'Error: sección [Database] está vacía')
-        raise SystemExit()
-
-    if not config.has_option('Database','usuario'):
-        print(f'Error: Opcion "usuario" no aparece sección [Database]')    
-        l_error = True
-    elif not config.has_option('Database','clave'):
-        print(f'Error: Opcion "clave" no aparece en sección [Database]')    
-        l_error = True
-    elif not config.has_option('Database','servidor'):
-        print(f'Error: Opcion "servidor" no aparece en sección [Database]')    
-        l_error = True
-    elif not config.has_option('Database','port'):
-        print(f'Error: Opcion "port" no aparece en sección [Database]')    
-        l_error = True
-    elif not config.has_option('Database','servicio'):
-        print(f'Error: Opcion "servicio" no aparece en sección [Database]')    
-        l_error = True
-    if l_error:
-        raise SystemExit()           
-    
-    # Validamos si las opciones tienen valores esperados
-    for opcion,valor in config['Database'].items():
-        if not valor :
-            print(f'Error: Opcion "{opcion}" no puede estar vacia en sección [Database]')    
-            l_error = True
-    if l_error:
-        raise SystemExit()            
-
-def valida_seccion_tablas(config):
-    l_error = False
-    opciones = config.options('Tablas')
-    if not opciones:
-        print(f'Error: sección [Tablas] está vacía')
-        raise SystemExit()
-
-    # Validación si las tablas incluyen el esquema        
-    for tabla in opciones:
-        owner =(tabla.upper()).split('.')
-        if len(owner) < 2:
-            print(f'Error : la tabla {owner[0]} debe llevar esquema.tabla')
-            l_error = True
-    if l_error :
-        raise SystemExit()
-    
-
-def valida_seccion_tablespaces(config):
-    l_error = False
-    opciones = config.options('Tablespaces')
-   
-    if not opciones:
-        print(f'Error: sección [Tablespaces] está vacía')
-        raise SystemExit()
-    if  not ('habilita_cambio' in opciones):
-        print(f'Error: Opción "habilita_cambio" no aparece en la sección [Tablespaces]')
-        raise SystemExit()
-
-    
-    habilita = config.getboolean('Tablespaces','habilita_cambio')
-    # Validamos que esten las opciones tablespace
-    if habilita :
-        if not config.has_option('Tablespaces','tablespace_tabla'): 
-           print(f'Error: Debe aparecer la opcion tablespace_tabla en la sección [Tablespaces]')
-           l_error =  True
-        elif not config.has_option('Tablespaces','tablespace_indice'):
-           print(f'Error: Debe aparecer la opcion tablespace_indice en la sección[Tablespaces]')
-           l_error = True
-    if l_error:
-        raise SystemExit()
-
-   
-def valida_archivo_config():
-    # Validamos que encriptador.cfg tenga las secciones esperadas
-    config = ConfigParser()
-    config.read('bin/encriptador.cfg')
-
-    # Validamos que encriptador.cfg tenga las secciones esperadas
-    valida_secciones(config)
-    # Validamos la seccion [Database], las  opciones y sus valores
-    valida_seccion_db(config)
-    # Validamos la sección [Tablas]
-    valida_seccion_tablas(config)
-    # Validamos la sección [Tablespaces]
-    valida_seccion_tablespaces(config)
-    return config
+# Crea la estructura de directorios para almacenar los scripts
 
 def crea_directorio(path_inicio, sid_db, esquema, tabla):
     ruta = dir_proyecto / path_inicio / sid_db / esquema / tabla
@@ -398,16 +295,26 @@ def main(config):
                     )
 logger = logging.getLogger(__name__)
 
-file_handler = logging.FileHandler('logs/encriptador.log',encoding='utf-8')
+file_handler = logging.FileHandler(
+                filename='logs/encriptador.log',
+                mode ='w',
+                encoding='utf-8')
 console_handler = logging.StreamHandler()
 
-formatter = logging.Formatter(
-        '{levelname} : {asctime}  {message}',
+formatter_fh = logging.Formatter(
+        '[{levelname}]:\t{asctime}\t[{filename}:{lineno}]: {message} ',
         datefmt='%Y-%m-%d %H:%M:%S',
         style='{',
         )
-        
-file_handler.setFormatter(formatter)
+formater_con = logging.Formatter(
+        '[{levelname}]:[{filename}:{lineno}]: {message} ',
+        datefmt='%Y-%m-%d %H:%M:%S',
+        style='{',
+        )
+
+
+file_handler.setFormatter(formatter_fh)
+console_handler.setFormatter(formater_con)
 console_handler.setLevel(logging.INFO)
 file_handler.setLevel(logging.DEBUG)
 
@@ -416,10 +323,10 @@ logger.addHandler(console_handler)
 logger.setLevel(logging.DEBUG)
 
 logger.info('Inicio Proceso Generacion Scripts Encriptacion')
-logger.debug('Leyendo archivo de configuración encriptador.cfg')
-exit()    
+
 if __name__ == "__main__":
     dir_proyecto = Path.cwd()
     config = ConfigParser()
-    config = valida_archivo_config()
+    config = valida_archivo_config(logger)
+   
     main(config)
