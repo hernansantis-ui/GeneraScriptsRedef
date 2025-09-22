@@ -1,13 +1,20 @@
-[INFO]:	2025-09-22 12:39:22	[Encriptador.py:325]: Inicio Proceso Generacion Scripts Encriptacion 
-[INFO]:	2025-09-22 12:39:22	[valida_configuracion.py:136]: Validando archivo de configuración encriptador.cfg 
-[DEBUG]:	2025-09-22 12:39:22	[valida_configuracion.py:140]: Leyendo archivo de configuración encriptador.cfg 
-[DEBUG]:	2025-09-22 12:39:22	[valida_configuracion.py:13]: Validando secciones del archivo encriptador.cfg 
-[DEBUG]:	2025-09-22 12:39:22	[valida_configuracion.py:31]: Secciones del archivo encriptador.cfg validadas correctamente 
-[DEBUG]:	2025-09-22 12:39:22	[valida_configuracion.py:34]: Validando sección [Database] del archivo encriptador.cfg 
-[DEBUG]:	2025-09-22 12:39:22	[valida_configuracion.py:67]: Sección [Database] del archivo encriptador.cfg validada correctamente 
-[DEBUG]:	2025-09-22 12:39:22	[valida_configuracion.py:71]: Validando sección [Tablas] del archivo encriptador.cfg 
-[DEBUG]:	2025-09-22 12:39:22	[valida_configuracion.py:86]: Validando tabla dev_odi_repo.tabla_prueba, owner=['DEV_ODI_REPO', 'TABLA_PRUEBA'] 
-[DEBUG]:	2025-09-22 12:39:22	[valida_configuracion.py:99]: Sección [Tablas] del archivo encriptador.cfg validada correctamente 
-[DEBUG]:	2025-09-22 12:39:22	[valida_configuracion.py:103]: Validando sección [Tablespaces] del archivo encriptador.cfg 
-[DEBUG]:	2025-09-22 12:39:22	[valida_configuracion.py:132]: Sección [Tablespaces] del archivo encriptador.cfg validada correctamente 
-[INFO]:	2025-09-22 12:39:22	[valida_configuracion.py:153]: Archivo de configuración encriptador.cfg validado 
+[INFO]:	2025-09-22 13:56:31	[main.py:64]: Inicio Proceso Generacion Scripts Encriptacion 
+[INFO]:	2025-09-22 13:56:31	[valida_configuracion.py:136]: Validando archivo de configuración encriptador.cfg 
+[DEBUG]:	2025-09-22 13:56:31	[valida_configuracion.py:140]: Leyendo archivo de configuración encriptador.cfg 
+[DEBUG]:	2025-09-22 13:56:31	[valida_configuracion.py:13]: Validando secciones del archivo encriptador.cfg 
+[DEBUG]:	2025-09-22 13:56:31	[valida_configuracion.py:31]: Secciones del archivo encriptador.cfg validadas correctamente 
+[DEBUG]:	2025-09-22 13:56:31	[valida_configuracion.py:34]: Validando sección [Database] del archivo encriptador.cfg 
+[DEBUG]:	2025-09-22 13:56:31	[valida_configuracion.py:67]: Sección [Database] del archivo encriptador.cfg validada correctamente 
+[DEBUG]:	2025-09-22 13:56:31	[valida_configuracion.py:71]: Validando sección [Tablas] del archivo encriptador.cfg 
+[DEBUG]:	2025-09-22 13:56:31	[valida_configuracion.py:86]: Validando tabla dev_odi_repo.tabla_prueba, owner=['DEV_ODI_REPO', 'TABLA_PRUEBA'] 
+[DEBUG]:	2025-09-22 13:56:31	[valida_configuracion.py:99]: Sección [Tablas] del archivo encriptador.cfg validada correctamente 
+[DEBUG]:	2025-09-22 13:56:31	[valida_configuracion.py:103]: Validando sección [Tablespaces] del archivo encriptador.cfg 
+[DEBUG]:	2025-09-22 13:56:31	[valida_configuracion.py:132]: Sección [Tablespaces] del archivo encriptador.cfg validada correctamente 
+[INFO]:	2025-09-22 13:56:31	[valida_configuracion.py:153]: Archivo de configuración encriptador.cfg validado 
+[DEBUG]:	2025-09-22 13:56:31	[Util_db.py:7]: Iniciando conexión a la base de datos. 
+[DEBUG]:	2025-09-22 13:56:31	[Util_db.py:17]: Conexión a la base de datos establecida con éxito. 
+[DEBUG]:	2025-09-22 13:56:31	[utilitarios.py:6]: Obteniendo parámetros de tablespaces desde el archivo de configuración. 
+[DEBUG]:	2025-09-22 13:56:31	[utilitarios.py:21]: Parámetros obtenidos: SID=ORA121, Paralelo=4, Habilita Cambio=True, Tablespace Tabla=None, Tablespace Índice=TS_PRUEBA 
+[DEBUG]:	2025-09-22 13:56:31	[utilitarios.py:28]: Obteniendo parámetros para la tabla dev_odi_repo.tabla_prueba desde el archivo de configuración. 
+[DEBUG]:	2025-09-22 13:56:31	[utilitarios.py:37]: Parámetros obtenidos para DEV_ODI_REPO.TABLA_PRUEBA: Columnas a encriptar=['LSCHEMA_NAME', 'EXT_VERSION', 'I_TGT_DB_LS'] 
+[DEBUG]:	2025-09-22 13:56:31	[main.py:27]: Procesando tabla DEV_ODI_REPO.TABLA_PRUEBA columnas a encriptar ['LSCHEMA_NAME', 'EXT_VERSION', 'I_TGT_DB_LS'] 
