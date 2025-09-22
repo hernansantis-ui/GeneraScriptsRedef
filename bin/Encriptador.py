@@ -11,7 +11,8 @@ from configparser import ConfigParser
 import sys
 import oracledb
 import re
- 
+import logging
+
 scripts = [
     ("00", "CAN_REDEF"),
     ("01", "CREA_I"),
@@ -395,8 +396,28 @@ def main(config):
                     archivo.write(
                         texto.replace("TABLA", tabla).replace("ESQUEMA", esquema).replace('paralelo',str(parallel))
                     )
+logger = logging.getLogger(__name__)
 
+file_handler = logging.FileHandler('logs/encriptador.log',encoding='utf-8')
+console_handler = logging.StreamHandler()
 
+formatter = logging.Formatter(
+        '{levelname} : {asctime}  {message}',
+        datefmt='%Y-%m-%d %H:%M:%S',
+        style='{',
+        )
+        
+file_handler.setFormatter(formatter)
+console_handler.setLevel(logging.INFO)
+file_handler.setLevel(logging.DEBUG)
+
+logger.addHandler(file_handler)
+logger.addHandler(console_handler)
+logger.setLevel(logging.DEBUG)
+
+logger.info('Inicio Proceso Generacion Scripts Encriptacion')
+logger.debug('Leyendo archivo de configuración encriptador.cfg')
+exit()    
 if __name__ == "__main__":
     dir_proyecto = Path.cwd()
     config = ConfigParser()
