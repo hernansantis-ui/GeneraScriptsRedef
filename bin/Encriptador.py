@@ -328,5 +328,4 @@ if __name__ == "__main__":
     dir_proyecto = Path.cwd()
     config = ConfigParser()
     config = valida_archivo_config(logger)
-   
     main(config)
