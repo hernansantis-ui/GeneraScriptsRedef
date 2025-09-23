@@ -1,7 +1,7 @@
 -- GENERA ROLLBACK  TABLA_PRUEBA
 
 -- Se renombra TABLA_PRUEBA como TMP_TABLA_PRUEBA
--- Se renombre INT_TABLA_PRUEBA como TABLA_PRUEBA
+-- Se renombre I_TABLA_PRUEBA como TABLA_PRUEBA
 -- Se renombram indices, constraints y trigges
 set serveroutput on
 declare

@@ -24,7 +24,7 @@ def conecta_db(config,logger):
         logger.critical(f"Error inesperado al conectar a la base de datos: {str(e)}")
         sys.exit(1) 
 
-def crea_script_ddl_tabla(conexion, tipo, esquema, tabla, archivo_salida,columnas,tablespace,habilita):
+def crea_script_ddl_tabla(conexion, tipo, esquema, tabla, archivo_salida,columnas,tablespace,habilita,logger):
     cursor = conexion.cursor()
     cursor.execute(
         """ 
@@ -52,11 +52,11 @@ def crea_script_ddl_tabla(conexion, tipo, esquema, tabla, archivo_salida,columna
     ddl_tabla = ddl_tabla.replace('"','')
     # Verificamos si hay columnas para encriptar
     if len(columnas) > 0:
-        ddl_tabla = encripta_columnas(ddl_tabla,columnas)
+        ddl_tabla = encripta_columnas(ddl_tabla,columnas,logger)
 
     # Verificamos si debemos cambiar el tableespace
     if habilita and tablespace != None:
-        ddl_tabla = cambia_tablespace(ddl_tabla,tablespace)
+        ddl_tabla = cambia_tablespace(ddl_tabla,tablespace,logger)
     # Transforma el nombre de la tabla a interina
     ddl_tabla = ddl_tabla.replace(f'{esquema}.{tabla}',f'{esquema}.I_{tabla}')
     #   Extraemos los comentarios de la tabla
@@ -82,7 +82,7 @@ def crea_script_ddl_tabla(conexion, tipo, esquema, tabla, archivo_salida,columna
         archivo.writelines(comentarios)
         archivo.write('EXIT')
 
-def obtener_lista_indices(conexion,esquema,tabla):
+def obtener_lista_indices(conexion,esquema,tabla,logger):
     cursor = conexion.cursor()
 
     cursor.execute(
@@ -95,7 +95,7 @@ def obtener_lista_indices(conexion,esquema,tabla):
     lista = [l[0] for l in resultado]
     return lista
 
-def crea_script_ddl_indices(conexion, tipo, esquema, tabla, archivo_salida,tablespace,habilita,parallel):
+def crea_script_ddl_indices(conexion, tipo, esquema, tabla, archivo_salida,tablespace,habilita,parallel,logger):
     cursor = conexion.cursor()
     cursor.execute(
         """ 
@@ -121,11 +121,11 @@ def crea_script_ddl_indices(conexion, tipo, esquema, tabla, archivo_salida,table
     ddl_indices = ddl_indices.replace('"','')
 #   Verificamos si debemos cambiar el tablespace
     if habilita and tablespace != None:
-        ddl_indices = cambia_tablespace(ddl_indices,tablespace)
+        ddl_indices = cambia_tablespace(ddl_indices,tablespace,logger)
 
 
 #   Agregamos la sentencia de compersion de indices
-    ddl_indices = ddl_incorpora_compresion(ddl_indices)
+    ddl_indices = ddl_incorpora_compresion(ddl_indices,logger)
         
 #   Cambiamos el nombre de los indices para hacerlos interinos
     ddl_indices = ddl_indices.replace(f'{esquema}.',f'{esquema}.I_')    
@@ -141,7 +141,7 @@ def crea_script_ddl_indices(conexion, tipo, esquema, tabla, archivo_salida,table
         archivo.write(ddl_indices)
         archivo.write('\n  EXIT')
 
-def llena_template_register(tipo, esquema, tabla, lista_indices, archivo_salida, template):
+def llena_template_register(tipo, esquema, tabla, lista_indices, archivo_salida, template,logger):
 
     with open(template, "r") as archivo:
         texto = archivo.read()
@@ -156,7 +156,7 @@ def llena_template_register(tipo, esquema, tabla, lista_indices, archivo_salida,
             archivo.write("\n")
         archivo.write("EXIT")
 
-def crea_scripts_redefinicion(dir_proyecto,conexion,sid_db, esquema, tabla,columnas,habilita,tablespace_tabla,tablespace_index,parallel) :
+def crea_scripts_redefinicion(dir_proyecto,conexion,sid_db, esquema, tabla,columnas,habilita,tablespace_tabla,tablespace_index,parallel,logger):
     SCRIPTS = [
         ("00", "CAN_REDEF"),
         ("01", "CREA_I"),
@@ -170,20 +170,20 @@ def crea_scripts_redefinicion(dir_proyecto,conexion,sid_db, esquema, tabla,colum
         ("07", "ROLLBACK"),
         ("99", "DROP"),
         ]
+    logger.debug(f"Creando scripts de redefinición para la tabla {esquema}.{tabla}")
+     # Creamos los scripts de redefinición
     for orden, tipo in SCRIPTS:
         archivo_salida = dir_proyecto/ "SQL"/sid_db/esquema/tabla/ f"{orden}_{tipo}_{tabla}.sql"
             
         template = dir_proyecto/"templates"/f"ESQ_{tipo}.txt"
 
         if orden == "01":
-                crea_script_ddl_tabla(conexion, tipo, esquema, tabla, archivo_salida,columnas,tablespace_tabla,habilita)
+                crea_script_ddl_tabla(conexion, tipo, esquema, tabla, archivo_salida,columnas,tablespace_tabla,habilita,logger)
         elif orden == "300":
-                crea_script_ddl_indices(conexion, tipo, esquema, tabla, archivo_salida,tablespace_index,habilita,parallel)
+                crea_script_ddl_indices(conexion, tipo, esquema, tabla, archivo_salida,tablespace_index,habilita,parallel,logger)
         elif orden == "303":
-                lista_indices = obtener_lista_indices(conexion,esquema,tabla)
-                llena_template_register(
-                    tipo, esquema, tabla, lista_indices, archivo_salida, template
-                )
+                lista_indices = obtener_lista_indices(conexion,esquema,tabla,logger)
+                llena_template_register(tipo, esquema, tabla, lista_indices, archivo_salida, template,logger)
         else:  # orden not in ('303'):
                 with open(template, "r") as archivo:
                     texto = archivo.read()

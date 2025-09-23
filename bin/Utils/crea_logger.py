@@ -2,10 +2,15 @@ import logging
 from pathlib import Path
 from configparser import ConfigParser
 
-def crea_logger():
+
+def crea_logger(config_file):
+    """ Función para crear el logger de la aplicación
+        - Lee el archivo de configuración para obtener nivel de log y archivo de log
+        - Crea el logger con manejo de archivo y consola
+    """
     
     config = ConfigParser()
-    config.read('bin/redefinition.cfg')
+    config.read(f'bin/{config_file}')
     nivel = config.get('default','log_level').upper()
     log_file = config.get('default','log_file')
 

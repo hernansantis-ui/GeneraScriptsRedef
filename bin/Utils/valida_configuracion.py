@@ -98,7 +98,6 @@ def valida_seccion_tablas(config,logger):
     else:
         logger.debug('Sección [Tablas] del archivo redefinition.cfg validada correctamente')  
 
-
 def valida_seccion_tablespaces(config,logger):
     logger.debug('Validando sección [Tablespaces] del archivo redefinition.cfg') 
     l_error = False
