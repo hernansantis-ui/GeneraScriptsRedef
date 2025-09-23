@@ -82,8 +82,6 @@ def crea_script_ddl_tabla(conexion, tipo, esquema, tabla, archivo_salida,columna
         archivo.writelines(comentarios)
         archivo.write('EXIT')
 
-
-
 def obtener_lista_indices(conexion,esquema,tabla):
     cursor = conexion.cursor()
 

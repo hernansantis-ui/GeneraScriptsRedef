@@ -1,0 +1,16 @@
+[DEBUG]:	2025-09-22 22:18:35	[crea_logger.py:39]: Logger creado con nivel DEBUG y archivo logs/redefinition.log 
+[DEBUG]:	2025-09-22 22:18:35	[valida_configuracion.py:138]: Validando archivo de configuración redefinition.cfg 
+[DEBUG]:	2025-09-22 22:18:35	[valida_configuracion.py:142]: Leyendo archivo de configuración redefinition.cfg 
+[DEBUG]:	2025-09-22 22:18:35	[valida_configuracion.py:13]: Validando secciones del archivo redefinition.cfg 
+[DEBUG]:	2025-09-22 22:18:35	[valida_configuracion.py:31]: Secciones del archivo redefinition.cfg validadas correctamente 
+[DEBUG]:	2025-09-22 22:18:35	[valida_configuracion.py:34]: Validando sección [Database] del archivo redefinition.cfg 
+[DEBUG]:	2025-09-22 22:18:35	[valida_configuracion.py:67]: Sección [Database] del archivo redefinition.cfg validada correctamente 
+[DEBUG]:	2025-09-22 22:18:35	[valida_configuracion.py:71]: Validando sección [Tablas] del archivo redefinition.cfg 
+[DEBUG]:	2025-09-22 22:18:35	[valida_configuracion.py:86]: Validando tabla dev_odi_repo.tabla_prueba, owner=['DEV_ODI_REPO', 'TABLA_PRUEBA'] 
+[DEBUG]:	2025-09-22 22:18:35	[valida_configuracion.py:99]: Sección [Tablas] del archivo redefinition.cfg validada correctamente 
+[DEBUG]:	2025-09-22 22:18:35	[valida_configuracion.py:103]: Validando sección [Tablespaces] del archivo redefinition.cfg 
+[DEBUG]:	2025-09-22 22:18:35	[valida_configuracion.py:132]: Sección [Tablespaces] del archivo redefinition.cfg validada correctamente 
+[INFO]:	2025-09-22 22:18:35	[valida_configuracion.py:154]: Archivo de configuración redefinition.cfg validado 
+[DEBUG]:	2025-09-22 22:18:35	[main.py:24]: Inicio del proceso de creación de scripts de redefinición de tablas 
+[DEBUG]:	2025-09-22 22:18:35	[Util_db.py:7]: Iniciando conexión a la base de datos. 
+[DEBUG]:	2025-09-22 22:18:35	[Util_db.py:17]: Conexión a la base de datos establecida con éxito. 
