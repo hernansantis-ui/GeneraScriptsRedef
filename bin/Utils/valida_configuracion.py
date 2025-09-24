@@ -16,7 +16,35 @@ def valida_seccion_default(config,logger):
         configurada con valores que no sean nulos
     """
     logger.debug('Validando opciones de la seccion [default] del archivo redefinition.cfg')
-
+    opciones_default = ['log_level','log_file','acceso_base']
+    niveles_permitidos = ['DEBUG','INFO','WARNING','ERROR','CRITICAL'] 
+    l_error = False
+    try:         
+        for opt in opciones_default:
+            if not config.has_option('default',opt):
+                logger.error(f'Error: Debe aparecer la opción "{opt}" en la sección [default]')
+                l_error = True
+            else:    
+                valor = config.get('default',opt)
+                if not valor :
+                    logger.error(f'Error: Opcion "{opt}" no puede estar vacia en sección [default]')    
+                    l_error = True
+                if opt == 'log_level' and valor.upper() not in niveles_permitidos:
+                    logger.error(f'Error: Opción "log_level" debe ser uno de {niveles_permitidos} en sección [default]')
+                    l_error = True
+                if opt == 'acceso_base' and valor.lower() not in ['si','no']:
+                    logger.error('Error: Opción "acceso_base" debe ser "si" o "no" en sección [default]')
+                    l_error = True  
+        if l_error:
+            raise ConfigError('Corrija el archivo redefinition.cfg y vuelva a ejecutar el programa')    
+    except ConfigError as e:
+        logger.critical(e)   
+        raise SystemExit()
+    except Exception as e:          
+        logger.error(f'Error inesperado al validar la sección [default]: {e}')
+        logger.critical('Corrija el archivo redefinition.cfg y vuelva a ejecutar el programa')
+        raise SystemExit()  
+    
 def  valida_secciones(config,logger):
     """ Valida que el archivo de configuración tenga las secciones esperadas """
     logger.debug('Validando secciones del archivo redefinition.cfg')
@@ -157,7 +185,7 @@ def valida_seccion_tablespaces(config,logger):
    
 def valida_archivo_config(config,logger):
 
-    """ Valida el archivo de configuración config_file """
+    """ Valida el archivo de configuración redefinition.cfg """
 
     logger.debug(f'Validando archivo de configuración ')
     
