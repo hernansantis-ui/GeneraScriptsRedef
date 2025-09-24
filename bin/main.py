@@ -7,22 +7,23 @@ encriptandolas y comprimiendolas
 """
 
 from pathlib import Path
-from configparser import ConfigParser
 from Utils.valida_configuracion import valida_archivo_config
-from Utils.crea_logger   import crea_logger 
 from Utils.Util_scripts  import inicia_scripts_redefinicion
+from Utils.utilitarios   import crea_config_parser
 
 CONFIG_FILE = 'redefinition.cfg'
 
 def main():
     """ Función principal del programa :
-                - Crear logger para manejo de loging
-                - Validar archivo de configuración        
-                - Crear script de redefinición de tablas
+            - Crea objeto configparser para leer el archivo de configuración
+            - Crear logger para manejo de loging
+            - Validar archivo de configuración        
+            - Crear los script de redefinición de tablas
     """
+    config,logger = crea_config_parser(CONFIG_FILE)
+
+    valida_archivo_config(config,logger)
     dir_proyecto = Path.cwd()
-    logger = crea_logger(CONFIG_FILE)
-    config = valida_archivo_config(CONFIG_FILE,logger)
     inicia_scripts_redefinicion(dir_proyecto,config,logger)
     
 if __name__ == "__main__":

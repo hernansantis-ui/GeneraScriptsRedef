@@ -1,5 +1,6 @@
 import logging
-from configparser import ConfigParser
+from Utils.utilitarios import crea_config_parser
+
 
 class ConfigError(Exception):
     """Excepción personalizada para errores de configuración."""
@@ -7,12 +8,20 @@ class ConfigError(Exception):
         self.message = message
         super().__init__(self.message)    
 
+def valida_seccion_default(config,logger):
+    """ Valida que el archivo de configuración tenga las opciones 
+            - log_level
+            - log_file
+            - acceso_base
+        configurada con valores que no sean nulos
+    """
+    logger.debug('Validando opciones de la seccion [default] del archivo redefinition.cfg')
 
 def  valida_secciones(config,logger):
     """ Valida que el archivo de configuración tenga las secciones esperadas """
     logger.debug('Validando secciones del archivo redefinition.cfg')
 
-    secciones_config = ["Database", "Tablas", "Tablespaces"]
+    secciones_config = ["default","Database", "Tablas", "Tablespaces"]
     l_error = False
     try:
         for seccion in secciones_config:
@@ -31,12 +40,22 @@ def  valida_secciones(config,logger):
         logger.debug('Secciones del archivo redefinition.cfg validadas correctamente')        
 
 def valida_seccion_db(config,logger):
+    """ Valida la sección [Database] del archivo redefinition.cfg """   
     logger.debug('Validando sección [Database] del archivo redefinition.cfg')
 
-    opciones_database = ['usuario','clave','servidor','port','servicio']
-    l_error = False
-    opciones = config.options('Database')
+    # Obtenemos la opcion acceso_base desde la seccion [default]
+    acceso_base = config.getboolean('default','acceso_base')
+
+    # Validamos si habrá acceso a la base de datos
+    if not acceso_base:
+        logger.info('No habrá acceso a la base de datos. Se omite la validación de la sección [Database]')
+        return
+    
+    # Si habrá acceso a la base de datos, validamos las opciones de la sección [Database]
     try:
+        opciones_database = ['usuario','clave','servidor','port','servicio']
+        l_error = False
+        opciones = config.options('Database')
         if not opciones:
             logger.critical('Error: sección [Database] está vacía')
             raise ConfigError('Corrija el archivo redefinition.cfg y vuelva a ejecutar el programa')
@@ -45,18 +64,24 @@ def valida_seccion_db(config,logger):
         for opt in opciones_database:
             if not opt in opciones:
                 logger.error(f'Error: Debe aparecer la opción "{opt}" en la sección [Database]')
-                l_error = True  
+                l_error = True
+            # Validamos que las opciones de [Database] tengan valores      
+            valor = config.get('Database',opt)
+            if not valor :
+                logger.error(f'Error: Opcion "{opt}" no puede estar vacia en sección [Database]')    
+                l_error = True                
+            if opt == 'port' : # Validamos que el puerto sea este entre 1 y 65535 si no es nulo 
+                try:
+                    puerto = config.getint('Database','port')
+                    if puerto <= 0 or puerto > 65535:
+                        logger.error('Error: Opción "port" debe ser un entero entre 1 y 65535 en sección [Database]')
+                        l_error = True
+                except ValueError:
+                    logger.error('Error: Opción "port" debe ser un entero en sección [Database]')
+                    l_error = True               
+                
         if l_error:
             raise ConfigError('Corrija el archivo redefinition.cfg y vuelva a ejecutar el programa')           
-    
-        # Validamos si las opciones de [Database] tienen valores
-        for opcion,valor in config['Database'].items():
-            if not valor :
-                logger.error(f'Error: Opcion "{opcion}" no puede estar vacia en sección [Database]')    
-                l_error = True
-
-        if l_error:
-            raise ConfigError('Corrija el archivo redefinition.cfg y vuelva a ejecutar el programa')            
     except ConfigError as e:
         logger.critical(e)   
         raise SystemExit()  
@@ -130,25 +155,25 @@ def valida_seccion_tablespaces(config,logger):
     else:
         logger.debug('Sección [Tablespaces] del archivo redefinition.cfg validada correctamente') 
    
-def valida_archivo_config(config_file,logger):
+def valida_archivo_config(config,logger):
 
     """ Valida el archivo de configuración config_file """
 
-    logger.debug(f'Validando archivo de configuración {config_file}')
-    try:
-        config = ConfigParser()
-        config.read(f'bin/{config_file}')
-        logger.debug(f'Leyendo archivo de configuración {config_file}')
-    except Exception as e:          
-        logger.critical(f'Error inesperado al leer el archivo de configuración {config_file}: {e}')
-        raise SystemExit()
+    logger.debug(f'Validando archivo de configuración ')
+    
     # Validamos que redefinition.cfg tenga las secciones esperadas
     valida_secciones(config,logger)
+
+    # Validamos la seccion [default], las opciones y sus valores
+    valida_seccion_default(config,logger)
+
     # Validamos la seccion [Database], las  opciones y sus valores
     valida_seccion_db(config,logger)
+
     # Validamos la sección [Tablas]
     valida_seccion_tablas(config,logger)
+
     # Validamos la sección [Tablespaces]
     valida_seccion_tablespaces(config,logger)
-    logger.info(f'Archivo de configuración {config_file} validado')
-    return config
+    logger.info(f'Archivo de configuración validado')
+    

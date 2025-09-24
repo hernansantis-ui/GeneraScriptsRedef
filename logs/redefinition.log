@@ -1,31 +1,31 @@
-[DEBUG]:	2025-09-22 22:47:11	[crea_logger.py:44]: Logger creado con nivel DEBUG y archivo logs/redefinition.log 
-[DEBUG]:	2025-09-22 22:47:11	[valida_configuracion.py:137]: Validando archivo de configuración redefinition.cfg 
-[DEBUG]:	2025-09-22 22:47:11	[valida_configuracion.py:141]: Leyendo archivo de configuración redefinition.cfg 
-[DEBUG]:	2025-09-22 22:47:11	[valida_configuracion.py:13]: Validando secciones del archivo redefinition.cfg 
-[DEBUG]:	2025-09-22 22:47:11	[valida_configuracion.py:31]: Secciones del archivo redefinition.cfg validadas correctamente 
-[DEBUG]:	2025-09-22 22:47:11	[valida_configuracion.py:34]: Validando sección [Database] del archivo redefinition.cfg 
-[DEBUG]:	2025-09-22 22:47:11	[valida_configuracion.py:67]: Sección [Database] del archivo redefinition.cfg validada correctamente 
-[DEBUG]:	2025-09-22 22:47:11	[valida_configuracion.py:71]: Validando sección [Tablas] del archivo redefinition.cfg 
-[DEBUG]:	2025-09-22 22:47:11	[valida_configuracion.py:86]: Validando tabla dev_odi_repo.tabla_prueba, owner=['DEV_ODI_REPO', 'TABLA_PRUEBA'] 
-[DEBUG]:	2025-09-22 22:47:11	[valida_configuracion.py:99]: Sección [Tablas] del archivo redefinition.cfg validada correctamente 
-[DEBUG]:	2025-09-22 22:47:11	[valida_configuracion.py:102]: Validando sección [Tablespaces] del archivo redefinition.cfg 
-[DEBUG]:	2025-09-22 22:47:11	[valida_configuracion.py:131]: Sección [Tablespaces] del archivo redefinition.cfg validada correctamente 
-[INFO]:	2025-09-22 22:47:11	[valida_configuracion.py:153]: Archivo de configuración redefinition.cfg validado 
-[DEBUG]:	2025-09-22 22:47:11	[Util_scripts.py:13]: Inicio del proceso de creación de scripts para redefinición de tablas 
-[DEBUG]:	2025-09-22 22:47:11	[Util_db.py:7]: Iniciando conexión a la base de datos. 
-[DEBUG]:	2025-09-22 22:47:11	[Util_db.py:17]: Conexión a la base de datos establecida con éxito. 
-[DEBUG]:	2025-09-22 22:47:11	[utilitarios.py:6]: Obteniendo parámetros de tablespaces desde el archivo de configuración. 
-[DEBUG]:	2025-09-22 22:47:11	[utilitarios.py:21]: Parámetros obtenidos: SID=ORA121, Paralelo=4, Habilita Cambio=True, Tablespace Tabla=None, Tablespace Índice=TS_PRUEBA 
-[DEBUG]:	2025-09-22 22:47:11	[utilitarios.py:28]: Obteniendo parámetros para la tabla dev_odi_repo.tabla_prueba desde el archivo de configuración. 
-[DEBUG]:	2025-09-22 22:47:11	[utilitarios.py:37]: Parámetros obtenidos para DEV_ODI_REPO.TABLA_PRUEBA: Columnas a encriptar=['LSCHEMA_NAME', 'EXT_VERSION', 'I_TGT_DB_LS'] 
-[DEBUG]:	2025-09-22 22:47:11	[Util_scripts.py:20]: Procesando tabla DEV_ODI_REPO.TABLA_PRUEBA columnas a encriptar ['LSCHEMA_NAME', 'EXT_VERSION', 'I_TGT_DB_LS'] 
-[DEBUG]:	2025-09-22 22:47:11	[utilitarios.py:44]: Creando directorio para SID=ORA121, Esquema=DEV_ODI_REPO, Tabla=TABLA_PRUEBA 
-[DEBUG]:	2025-09-22 22:47:11	[utilitarios.py:48]: Directorio creado: D:\Proyectos\Transbank\Codigos\Encriptador\SQL\ORA121\DEV_ODI_REPO\TABLA_PRUEBA 
-[DEBUG]:	2025-09-22 22:47:11	[Util_db.py:173]: Creando scripts de redefinición para la tabla DEV_ODI_REPO.TABLA_PRUEBA 
-[DEBUG]:	2025-09-22 22:47:12	[utilitarios.py:85]: Incorporando encriptación en las columnas: ['LSCHEMA_NAME', 'EXT_VERSION', 'I_TGT_DB_LS'] 
-[DEBUG]:	2025-09-22 22:47:12	[utilitarios.py:106]: Encriptación incorporada correctamente en el DDL de la tabla. 
-[DEBUG]:	2025-09-22 22:47:13	[utilitarios.py:54]: Cambiando tablespace a TS_PRUEBA en el DDL del objeto. 
-[DEBUG]:	2025-09-22 22:47:13	[utilitarios.py:63]: Cambio de tablespace realizado correctamente. 
-[DEBUG]:	2025-09-22 22:47:13	[utilitarios.py:70]: Incorporando compresión avanzada en el DDL de índices. 
-[DEBUG]:	2025-09-22 22:47:13	[utilitarios.py:78]: Compresión avanzada incorporada correctamente en el DDL de índices. 
-[DEBUG]:	2025-09-22 22:47:13	[Util_scripts.py:27]: Proceso de creación de scripts finalizado 
+[DEBUG]:	2025-09-24 13:24:30	[crea_logger.py:42]: Logger creado con nivel DEBUG y archivo logs/redefinition.log 
+[DEBUG]:	2025-09-24 13:24:30	[valida_configuracion.py:162]: Validando archivo de configuración  
+[DEBUG]:	2025-09-24 13:24:30	[valida_configuracion.py:22]: Validando secciones del archivo redefinition.cfg 
+[DEBUG]:	2025-09-24 13:24:30	[valida_configuracion.py:40]: Secciones del archivo redefinition.cfg validadas correctamente 
+[DEBUG]:	2025-09-24 13:24:30	[valida_configuracion.py:18]: Validando opciones de la seccion [default] del archivo redefinition.cfg 
+[DEBUG]:	2025-09-24 13:24:30	[valida_configuracion.py:44]: Validando sección [Database] del archivo redefinition.cfg 
+[INFO]:	2025-09-24 13:24:30	[valida_configuracion.py:51]: No habrá acceso a la base de datos. Se omite la validación de la sección [Database] 
+[DEBUG]:	2025-09-24 13:24:30	[valida_configuracion.py:96]: Validando sección [Tablas] del archivo redefinition.cfg 
+[DEBUG]:	2025-09-24 13:24:30	[valida_configuracion.py:111]: Validando tabla dev_odi_repo.tabla_prueba, owner=['DEV_ODI_REPO', 'TABLA_PRUEBA'] 
+[DEBUG]:	2025-09-24 13:24:30	[valida_configuracion.py:124]: Sección [Tablas] del archivo redefinition.cfg validada correctamente 
+[DEBUG]:	2025-09-24 13:24:30	[valida_configuracion.py:127]: Validando sección [Tablespaces] del archivo redefinition.cfg 
+[DEBUG]:	2025-09-24 13:24:30	[valida_configuracion.py:156]: Sección [Tablespaces] del archivo redefinition.cfg validada correctamente 
+[INFO]:	2025-09-24 13:24:30	[valida_configuracion.py:178]: Archivo de configuración validado 
+[DEBUG]:	2025-09-24 13:24:30	[Util_scripts.py:13]: Inicio del proceso de creación de scripts para redefinición de tablas 
+[DEBUG]:	2025-09-24 13:24:30	[Util_db.py:7]: Iniciando conexión a la base de datos. 
+[DEBUG]:	2025-09-24 13:24:30	[Util_db.py:17]: Conexión a la base de datos establecida con éxito. 
+[DEBUG]:	2025-09-24 13:24:30	[utilitarios.py:37]: Obteniendo parámetros de tablespaces desde el archivo de configuración. 
+[DEBUG]:	2025-09-24 13:24:30	[utilitarios.py:52]: Parámetros obtenidos: SID=ORA121, Paralelo=4, Habilita Cambio=True, Tablespace Tabla=None, Tablespace Índice=TS_PRUEBA 
+[DEBUG]:	2025-09-24 13:24:30	[utilitarios.py:59]: Obteniendo parámetros para la tabla dev_odi_repo.tabla_prueba desde el archivo de configuración. 
+[DEBUG]:	2025-09-24 13:24:30	[utilitarios.py:68]: Parámetros obtenidos para DEV_ODI_REPO.TABLA_PRUEBA: Columnas a encriptar=['LSCHEMA_NAME', 'EXT_VERSION', 'I_TGT_DB_LS'] 
+[DEBUG]:	2025-09-24 13:24:30	[Util_scripts.py:20]: Procesando tabla DEV_ODI_REPO.TABLA_PRUEBA columnas a encriptar ['LSCHEMA_NAME', 'EXT_VERSION', 'I_TGT_DB_LS'] 
+[DEBUG]:	2025-09-24 13:24:30	[utilitarios.py:75]: Creando directorio para SID=ORA121, Esquema=DEV_ODI_REPO, Tabla=TABLA_PRUEBA 
+[DEBUG]:	2025-09-24 13:24:30	[utilitarios.py:79]: Directorio creado: D:\Proyectos\Transbank\Codigos\Encriptador\SQL\ORA121\DEV_ODI_REPO\TABLA_PRUEBA 
+[DEBUG]:	2025-09-24 13:24:30	[Util_db.py:173]: Creando scripts de redefinición para la tabla DEV_ODI_REPO.TABLA_PRUEBA 
+[DEBUG]:	2025-09-24 13:24:30	[utilitarios.py:116]: Incorporando encriptación en las columnas: ['LSCHEMA_NAME', 'EXT_VERSION', 'I_TGT_DB_LS'] 
+[DEBUG]:	2025-09-24 13:24:30	[utilitarios.py:137]: Encriptación incorporada correctamente en el DDL de la tabla. 
+[DEBUG]:	2025-09-24 13:24:30	[utilitarios.py:85]: Cambiando tablespace a TS_PRUEBA en el DDL del objeto. 
+[DEBUG]:	2025-09-24 13:24:30	[utilitarios.py:94]: Cambio de tablespace realizado correctamente. 
+[DEBUG]:	2025-09-24 13:24:30	[utilitarios.py:101]: Incorporando compresión avanzada en el DDL de índices. 
+[DEBUG]:	2025-09-24 13:24:30	[utilitarios.py:109]: Compresión avanzada incorporada correctamente en el DDL de índices. 
+[DEBUG]:	2025-09-24 13:24:31	[Util_scripts.py:27]: Proceso de creación de scripts finalizado 

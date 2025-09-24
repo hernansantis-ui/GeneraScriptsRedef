@@ -1,6 +1,37 @@
 
 import sys
 import re
+import configparser #import ConfigParser
+from pathlib import Path
+from Utils.crea_logger import crea_logger
+
+def crea_config_parser(config_file):
+    """ Crea el parser para leer el archivo de configuración config_file """
+
+    try:
+        config = configparser.ConfigParser()
+        config.read(f'{Path.cwd()/'bin'/config_file}')
+        config.BOOLEAN_STATES = {'si':True, 'no':False}
+        logger = crea_logger(config)
+        return config,logger
+    except FileNotFoundError:
+        logger.critical(f'Archivo de configuración {config_file} no encontrado')
+        raise SystemExit()  
+    except Exception as e:          
+        logger.critical(f'Error inesperado al leer el archivo de configuración {config_file}: {e}')
+        raise SystemExit()  
+    
+def get_parametros_default(config,logger): 
+    logger.debug("Obteniendo parámetros por defecto desde el archivo de configuración.")
+    try:
+        log_file = config.get('default','log_file')
+        log_level = config.get('default','log_level').upper()
+        acceso_base = config.getboolean('default','acceso_base')
+        logger.debug(f"Parámetros obtenidos: log_file={log_file}, log_level={log_level}") 
+        return log_file, log_level,acceso_base
+    except Exception as e:
+        logger.critical(f"Error al obtener parámetros por defecto: {str(e)}")
+        sys.exit(1)
 
 def get_parametros_tbs(config,logger):
     logger.debug("Obteniendo parámetros de tablespaces desde el archivo de configuración.")
