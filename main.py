@@ -12,9 +12,9 @@ from Utils.Utils_validacion import valida_archivo_config
 from Utils.Utils_scripts  import inicia_scripts_redefinicion
 from Utils.Utils   import crea_config_parser
 
-CONFIG_FILE  = 'redefinition.cfg'
-DIR_PROYECTO = Path.cwd()
 
+DIR_PROYECTO = Path.cwd()
+CONFIG_FILE = DIR_PROYECTO/"config"/"redefinition.cfg"
 
 def main():
     """ Función principal del programa :
@@ -23,10 +23,11 @@ def main():
             - Validar archivo de configuración        
             - Crear los script de redefinición de tablas
     """
+    print(DIR_PROYECTO)
     config,logger = crea_config_parser(CONFIG_FILE)
 
     valida_archivo_config(config,logger)
     inicia_scripts_redefinicion(DIR_PROYECTO,config,logger)
-    
+
 if __name__ == "__main__":
         main()

@@ -10,8 +10,8 @@ BEGIN
 	                                            int_table  => 'I_TABLA',
 		                                        dep_type   => DBMS_REDEFINITION.CONS_INDEX,
 		                                        dep_owner     => 'ESQUEMA',
-		                                        dep_orig_name => 'INDICE',
-			                                    dep_int_name  => 'I_INDICE');
+		                                        dep_orig_name => 'INDICE_ORIGINAL',
+			                                    dep_int_name  => 'I_INDICE_NUEVO');
 
     DBMS_OUTPUT.PUT_LINE('Proceso REGISTER INDICE : OK');
     DBMS_OUTPUT.PUT_LINE('Finalización: ' || TO_CHAR(SYSDATE,'YYYY/MM/DD  HH24:MI:SS'));

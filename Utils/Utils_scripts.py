@@ -1,11 +1,26 @@
-from Utils.Utils_db     import crea_script_tabla_from_db,crea_script_indices_from_db
-from Utils.Utils_ddl    import crea_script_from_ddl
-from Utils.Utils        import crea_directorio_SQL, get_parametros_tablas,get_parametros_tbs    
+from Utils.Utils_db     import (
+                                crea_script_tabla_from_db,
+                                crea_script_indices_from_db,
+                                obtener_lista_indices
+                                )
+from Utils.Utils_ddl import (
+    obtener_lista_indices,
+    cambia_nombre_a_interino,
+    cambia_tablespace,
+    crea_script_from_ddl,
+    reemplaza_tabs_comillas,
+    encripta_columnas,
+    agrega_compresion_indice,
+    verificar_largo_indices,
+    llena_template_303
+)
+from Utils.Utils        import (
+                                crea_directorio_SQL, 
+                                get_parametros_tablas,
+                                get_parametros_tbs
+                                )
 
-
-
-
-def crea_script_redef_300(dir_proyecto,sql_dir,config,archivo_salida,base_dato, esquema, tabla,logger):
+def crea_script_redef_300(dir_proyecto,sql_dir,config,archivo_salida,esquema, tabla,logger):
     """
         Funcion para la creación del script de redeficion 300_CREA_INDEX_I...sql
 
@@ -13,31 +28,42 @@ def crea_script_redef_300(dir_proyecto,sql_dir,config,archivo_salida,base_dato, 
 
     logger.debug(f"Creando scripts de redefinición {archivo_salida} ")
     acceso_base = config.getboolean('default','acceso_base')
+    habilita, tablespace = get_parametros_tbs(config,logger,indice=True)
+
     try:
         if not acceso_base :
             # Se crea script desde el DDL
             ddls_dir = dir_proyecto/'DDLS'
             crea_script_from_ddl(ddls_dir,sql_dir,archivo_salida,esquema,tabla,logger,indices=True)
-            
+
         else:
             # Se crea script desde la base
             crea_script_indices_from_db(config, esquema, tabla, archivo_salida,logger)
 
-        #crea_scripts_ddl(dir_proyecto,sid_db, esquema, tabla,columnas,habilita,tablespace_tabla,tablespace_index,parallel,logger) 
+        # crea_scripts_ddl(dir_proyecto,sid_db, esquema, tabla,columnas,habilita,tablespace_tabla,tablespace_index,parallel,logger)
+        # reemplazamos tabs y comillas dobles
+        reemplaza_tabs_comillas(sql_dir, esquema, tabla, archivo_salida, logger)
+        # Se cambia el nombre de los tablespaces, si aplica
+        if habilita and tablespace != None:
+            cambia_tablespace(sql_dir, archivo_salida, tablespace, logger)
 
+        # Se agrega la sentencia de compresion
+        agrega_compresion_indice(sql_dir, archivo_salida, logger)
+        # Se cambia el nombres de tabla a tabla interina(I_"tabla")
+        cambia_nombre_a_interino(sql_dir,archivo_salida,esquema,logger)
     except Exception as e:
         logger.critical(f'Error inesperado al crear  {archivo_salida} : {e}')
         raise SystemExit()  
     else:
         logger.debug(f'Scripts de redefinición {archivo_salida} creados correctamente ')  
 
-    pass
 
-def crea_script_redef_01(dir_proyecto,sql_dir,config,archivo_salida,base_dato, esquema, tabla,columnas,logger):
+def crea_script_redef_01(dir_proyecto,sql_dir,config,archivo_salida, esquema, tabla,columnas,logger):
     """ Función para crear el script de redefinicion 01_CREA_I...sql
     """
     logger.debug(f"Creando scripts de redefinición {archivo_salida} ")
     acceso_base = config.getboolean('default','acceso_base')
+    habilita, tablespace = get_parametros_tbs(config,logger,indice=False)
     try:
         if not acceso_base :
             # Se crea script desde el DDL
@@ -47,14 +73,31 @@ def crea_script_redef_01(dir_proyecto,sql_dir,config,archivo_salida,base_dato, e
             # Se crea script desde la base
             crea_script_tabla_from_db(config,esquema, tabla, archivo_salida,logger)
 
-        #crea_scripts_ddl(dir_proyecto,sid_db, esquema, tabla,columnas,habilita,tablespace_tabla,tablespace_index,parallel,logger) 
-
+        # reemplazamos tabs y comillas dobles
+        reemplaza_tabs_comillas(sql_dir, esquema, tabla, archivo_salida, logger)
+        # Se cambia el nombre de los tablespaces, si aplica
+        if habilita and tablespace != None:
+            cambia_tablespace(sql_dir, archivo_salida, tablespace, logger)
+        # Se encriptan las columnas, si hay
+        encripta_columnas(sql_dir,archivo_salida,columnas,logger)
+        # Se cambian el nombre de la tabla a tabla interina (I_"tabla")
+        cambia_nombre_a_interino(sql_dir,archivo_salida,esquema,logger)
     except Exception as e:
         logger.critical(f'Error inesperado al crear el scripts {archivo_salida}: {e}')
         raise SystemExit()  
     else:
         logger.debug(f'Scripts de redefinición {archivo_salida} creados correctamente ')  
 
+
+def crea_sript_redef_303(sql_dir, archivo_salida, script_300, esquema, tabla, template,logger):
+    logger.debug(f"Creando scripts de redefinición {archivo_salida} ")
+    #   Obtener la lista de indices desde el script_300
+    lista_indices_original = obtener_lista_indices(script_300, esquema, logger)
+    #   Verificar los indices con mas de 28 caracteres
+    lista_indices = verificar_largo_indices(sql_dir, script_300, lista_indices_original, logger)
+    #   Componer los nombres de los indices en script_300, si aplica
+    #   Rellenar el template REGISTER
+    llena_template_303(sql_dir,esquema, tabla, lista_indices,lista_indices_original, archivo_salida,template, logger)
 
 def crea_scripts_redefinicion(dir_proyecto,sql_dir,config,base_dato, esquema, tabla,columnas,logger):      
     """ Función para crear los scripts de redefinición de tablas los DDL's de las tablas
@@ -77,27 +120,38 @@ def crea_scripts_redefinicion(dir_proyecto,sql_dir,config,base_dato, esquema, ta
     TEMPLATE_DIR = dir_proyecto/'templates'
 
     logger.debug(f"Creando scripts de redefinición para la tabla {esquema}.{tabla} desde DDL")
-    parallel = config.getint('Tablespaces','paralelo')
+
     try:
         for orden, tipo in SCRIPTS:
             archivo_script = sql_dir/base_dato/esquema/tabla/ f"{orden}_{tipo}_{tabla}.sql"
-            
+            if orden == '300':
+                script_300 = archivo_script
             template = TEMPLATE_DIR/f"ESQ_{tipo}.txt"
             if orden == '01':
-                crea_script_redef_01(dir_proyecto,sql_dir,config,archivo_script,base_dato, esquema, tabla,columnas,logger)
+                crea_script_redef_01(
+                    dir_proyecto,
+                    sql_dir,
+                    config,
+                    archivo_script,
+                    esquema,
+                    tabla,
+                    columnas,
+                    logger,
+                )
             elif  orden == '300' :
-                crea_script_redef_300(dir_proyecto,sql_dir,config,archivo_script,base_dato, esquema, tabla,logger)
+                crea_script_redef_300(dir_proyecto,sql_dir,config,archivo_script,esquema, tabla,logger)
             elif orden == "303":
                 logger.debug(f'Archivo {archivo_script}')
+                crea_sript_redef_303(sql_dir,archivo_script,script_300,esquema,tabla,template,logger)
             #     lista_indices = obtener_lista_indices(config,esquema,tabla,logger)
             #     crea_script_redef_303()
-#                llena_template_register(tipo, esquema, tabla, lista_indices, archivo_salida, template,logger)
+            #                llena_template_register(tipo, esquema, tabla, lista_indices, archivo_salida, template,logger)
             else:  # orden not in ('303'):
                 with open(template, "r") as archivo:
                     texto = archivo.read()
                 with open(archivo_script, "w") as archivo:
                     archivo.write(
-                        texto.replace("TABLA", tabla).replace("ESQUEMA", esquema).replace('paralelo',str(parallel))
+                        texto.replace("TABLA", tabla).replace("ESQUEMA", esquema).replace('paralelo',str(1))
                     )
     except Exception as e:
         logger.critical(f'Error inesperado al crear los scripts de redefinición {archivo_script} : {e}')

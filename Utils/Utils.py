@@ -1,4 +1,3 @@
-
 import sys
 import re
 import configparser #import ConfigParser
@@ -46,6 +45,7 @@ def crea_config_parser(config_file):
             - Valida que el archivo tenga la sección [default] y las opciones
               log_level, log_file con valores válidos 
     """
+    print(config_file)
     opciones_default = ['log_level','log_file']
     niveles_permitidos = ['DEBUG','INFO','WARNING','ERROR','CRITICAL']  
     try:
@@ -70,7 +70,7 @@ def crea_config_parser(config_file):
         raise SystemExit(f'Archivo de configuración {config_file} no encontrado')  
     except Exception as e:          
         raise SystemExit(f'Error inesperado al leer el archivo de configuración {config_file}: {e}')  
-    
+
 def get_parametros_default(config,logger): 
     logger.debug("Obteniendo parámetros por defecto desde el archivo de configuración.")
     try:
@@ -83,24 +83,18 @@ def get_parametros_default(config,logger):
         logger.critical(f"Error al obtener parámetros por defecto: {str(e)}")
         sys.exit(1)
 
-def get_parametros_tbs(config,logger):
+def get_parametros_tbs(config,logger,indice):
     logger.debug("Obteniendo parámetros de tablespaces desde el archivo de configuración.")
     try:
-        sid_db = config.get('Database','servicio')
-        parallel = int(config.get('Tablespaces','paralelo'))
         habilita = config.getboolean('Tablespaces','habilita_cambio')
-        if habilita:
-            tablespace_tabla = config.get('Tablespaces','tablespace_tabla')
-            tablespace_index = config.get('Tablespaces','tablespace_indice')
-            if len(tablespace_tabla) == 0 :
-                tablespace_tabla=None
-            if len(tablespace_index) == 0 :
-                tablespace_index=None
-        else:
-            tablespace_tabla=None
-            tablespace_index=None
-        logger.debug(f"Parámetros obtenidos: SID={sid_db}, Paralelo={parallel}, Habilita Cambio={habilita}, Tablespace Tabla={tablespace_tabla}, Tablespace Índice={tablespace_index}") 
-        return sid_db, parallel, habilita, tablespace_tabla, tablespace_index
+        if habilita and indice:
+            tablespace = config.get('Tablespaces','tablespace_indice')
+        elif habilita and not indice:
+            tablespace = config.get("Tablespaces", "tablespace_tabla")
+        if len(tablespace) == 0:
+            tablespace=None
+        logger.debug(f"Parámetros obtenidos: Habilita Cambio={habilita}, Tablespace Tabla={tablespace},") 
+        return habilita, tablespace 
     except Exception as e:
         logger.critical(f"Error al obtener parámetros de tablespaces: {str(e)}")
         sys.exit(1)         
@@ -146,7 +140,7 @@ def cambia_tablespace(ddl_objeto,tablespace,logger):
     except Exception as e:
         logger.critical(f"Error al cambiar tablespace en el DDL: {str(e)}")
         sys.exit(1)
-    
+
 def ddl_incorpora_compresion(ddl_indices,logger):
     logger.debug("Incorporando compresión avanzada en el DDL de índices.")
 #   Buscamos la palabra TABLESPACE e incorporamos la compresion de indices antes
