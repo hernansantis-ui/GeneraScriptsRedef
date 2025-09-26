@@ -39,7 +39,7 @@ def verificar_largo_indices(sql_dir,script_300,lista_indices,logger):
     lista_nueva=[]
     contador = 1
     for indice in lista_indices:
-        if len(indice) > 13:
+        if len(indice) > 28:
             # Si el largo es mayor a 28, debemos eliminar los
             # últimos 2 caracteres y reemplazar por un contador
             n_indice = f'{indice[0:-2]}{contador:02d}'
