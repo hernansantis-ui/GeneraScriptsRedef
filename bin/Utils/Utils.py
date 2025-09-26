@@ -46,7 +46,7 @@ def crea_config_parser(config_file):
             - Valida que el archivo tenga la sección [default] y las opciones
               log_level, log_file con valores válidos 
     """
-    opciones_default = ['log_level','log_file','acceso_base']
+    opciones_default = ['log_level','log_file']
     niveles_permitidos = ['DEBUG','INFO','WARNING','ERROR','CRITICAL']  
     try:
         config = configparser.ConfigParser()
@@ -106,7 +106,7 @@ def get_parametros_tbs(config,logger):
         sys.exit(1)         
 
 def get_parametros_tablas(config,opt,logger):
-    logger.debug(f"Obteniendo parámetros para la tabla {opt} desde el archivo de configuración.")
+    logger.debug(f"Obteniendo parámetros para la tabla {opt.upper()} desde el archivo de configuración.")
     try:
         esquema = opt.split('.')[0].upper()
         tabla = opt.split('.')[1].upper()
@@ -115,16 +115,16 @@ def get_parametros_tablas(config,opt,logger):
             columnas = [col.strip() for col in config.get('Tablas',opt).split(',')]
         else:
             columnas=[]    
-        logger.debug(f"Parámetros obtenidos para {esquema}.{tabla}: Columnas a encriptar={columnas}")
+        logger.debug(f"{esquema}.{tabla}: Columnas a encriptar={columnas}")
         return esquema, tabla, columnas
     except Exception as e: 
         logger.critical(f"Error al obtener parámetros para la tabla {opt}: {str(e)}")
         sys.exit(1)
 
-def crea_directorio(dir_proyecto,path_inicio, sid_db, esquema, tabla,logger):
-    logger.debug(f"Creando directorio para SID={sid_db}, Esquema={esquema}, Tabla={tabla}")
+def crea_directorio_SQL(sql_dir, base_dato, esquema, tabla,logger):
+    logger.debug(f"Creando directorio para {base_dato=}, {esquema=}, {tabla=}")
     try:
-        ruta = dir_proyecto / path_inicio / sid_db / esquema / tabla
+        ruta = sql_dir / base_dato / esquema / tabla
         ruta.mkdir(parents=True, exist_ok=True)
         logger.debug(f"Directorio creado: {ruta}")  
     except Exception as e:

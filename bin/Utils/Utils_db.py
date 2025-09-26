@@ -1,6 +1,6 @@
 import oracledb
 import sys
-from Utils.utilitarios import cambia_tablespace, ddl_incorpora_compresion, encripta_columnas
+from Utils.Utils import cambia_tablespace, ddl_incorpora_compresion, encripta_columnas
 
 def conecta_db(config,logger):
     """Función para conectar a la base de datos Oracle usando los parámetros del archivo de configuración."""
@@ -24,7 +24,8 @@ def conecta_db(config,logger):
         logger.critical(f"Error inesperado al conectar a la base de datos: {str(e)}")
         sys.exit(1) 
 
-def crea_script_ddl_tabla(conexion, tipo, esquema, tabla, archivo_salida,columnas,tablespace,habilita,logger):
+def crea_script_tabla_from_db(config,esquema, tabla, archivo_salida,logger):
+    conexion = conecta_db(config,logger)
     cursor = conexion.cursor()
     cursor.execute(
         """ 
@@ -47,19 +48,19 @@ def crea_script_ddl_tabla(conexion, tipo, esquema, tabla, archivo_salida,columna
     resultado = cursor.fetchone()
     ddl_tabla = resultado[0].read()
     # Eliminamos los tabs
-    ddl_tabla = ddl_tabla.expandtabs(tabsize=2)
-     # Eliminamos las doble comillas 
-    ddl_tabla = ddl_tabla.replace('"','')
-    # Verificamos si hay columnas para encriptar
-    if len(columnas) > 0:
-        ddl_tabla = encripta_columnas(ddl_tabla,columnas,logger)
+    # ddl_tabla = ddl_tabla.expandtabs(tabsize=2)
+    #  # Eliminamos las doble comillas 
+    # ddl_tabla = ddl_tabla.replace('"','')
+    # # Verificamos si hay columnas para encriptar
+    # if len(columnas) > 0:
+    #     ddl_tabla = encripta_columnas(ddl_tabla,columnas,logger)
 
-    # Verificamos si debemos cambiar el tableespace
-    if habilita and tablespace != None:
-        ddl_tabla = cambia_tablespace(ddl_tabla,tablespace,logger)
-    # Transforma el nombre de la tabla a interina
-    ddl_tabla = ddl_tabla.replace(f'{esquema}.{tabla}',f'{esquema}.I_{tabla}')
-    #   Extraemos los comentarios de la tabla
+    # # Verificamos si debemos cambiar el tableespace
+    # if habilita and tablespace != None:
+    #     ddl_tabla = cambia_tablespace(ddl_tabla,tablespace,logger)
+    # # Transforma el nombre de la tabla a interina
+    # ddl_tabla = ddl_tabla.replace(f'{esquema}.{tabla}',f'{esquema}.I_{tabla}')
+    # #   Extraemos los comentarios de la tabla
     cursor.execute(
         """
             select 'COMMENT ON COLUMN '||owner||'.'||table_name||'.'||column_name||' IS '''||comments||''' ;' 
@@ -75,6 +76,7 @@ def crea_script_ddl_tabla(conexion, tipo, esquema, tabla, archivo_salida,columna
     comentarios = [comen[0].replace(f'{esquema}.{tabla}',f'{esquema}.I_{tabla}') + "\n" for comen in lista_comentarios]
 
     cursor.close()
+    conexion.close()
     # cambiamos el nombre de la tabla en los comentarios
     
     with open(archivo_salida, "w") as archivo:
@@ -95,7 +97,9 @@ def obtener_lista_indices(conexion,esquema,tabla,logger):
     lista = [l[0] for l in resultado]
     return lista
 
-def crea_script_ddl_indices(conexion, tipo, esquema, tabla, archivo_salida,tablespace,habilita,parallel,logger):
+def crea_script_indices_from_db(config, esquema, tabla, archivo_salida,logger):
+    conexion = conecta_db(config,logger)
+    parallel = config.getint('Tablespaces','paralelo')
     cursor = conexion.cursor()
     cursor.execute(
         """ 
@@ -114,22 +118,22 @@ def crea_script_ddl_indices(conexion, tipo, esquema, tabla, archivo_salida,table
     ddl_indices = resultado[0].read()
 
     cursor.close()
-    # Eliminamos los tabs
-    ddl_indices = ddl_indices.expandtabs(tabsize=2)
+#     # Eliminamos los tabs
+#     ddl_indices = ddl_indices.expandtabs(tabsize=2)
 
-#   Eliminamos las comillas en los indices
-    ddl_indices = ddl_indices.replace('"','')
-#   Verificamos si debemos cambiar el tablespace
-    if habilita and tablespace != None:
-        ddl_indices = cambia_tablespace(ddl_indices,tablespace,logger)
+# #   Eliminamos las comillas en los indices
+#     ddl_indices = ddl_indices.replace('"','')
+# #   Verificamos si debemos cambiar el tablespace
+#     if habilita and tablespace != None:
+#         ddl_indices = cambia_tablespace(ddl_indices,tablespace,logger)
 
 
-#   Agregamos la sentencia de compersion de indices
-    ddl_indices = ddl_incorpora_compresion(ddl_indices,logger)
+# #   Agregamos la sentencia de compersion de indices
+#     ddl_indices = ddl_incorpora_compresion(ddl_indices,logger)
         
-#   Cambiamos el nombre de los indices para hacerlos interinos
-    ddl_indices = ddl_indices.replace(f'{esquema}.',f'{esquema}.I_')    
-#   Debemos agregar la sentica que comprime el indice
+# #   Cambiamos el nombre de los indices para hacerlos interinos
+#     ddl_indices = ddl_indices.replace(f'{esquema}.',f'{esquema}.I_')    
+# #   Debemos agregar la sentica que comprime el indice
         
 
     with open(archivo_salida, "w") as archivo:
@@ -156,7 +160,7 @@ def llena_template_register(tipo, esquema, tabla, lista_indices, archivo_salida,
             archivo.write("\n")
         archivo.write("EXIT")
 
-def crea_scripts_redefinicion(dir_proyecto,conexion,sid_db, esquema, tabla,columnas,habilita,tablespace_tabla,tablespace_index,parallel,logger):
+def crea_scripts_redef_x_db(dir_proyecto,conexion,sid_db, esquema, tabla,columnas,habilita,tablespace_tabla,tablespace_index,parallel,logger):
     SCRIPTS = [
         ("00", "CAN_REDEF"),
         ("01", "CREA_I"),

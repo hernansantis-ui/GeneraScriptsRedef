@@ -1,5 +1,5 @@
 import logging
-from Utils.utilitarios import crea_config_parser
+from Utils.Utils import crea_config_parser
 
 
 class ConfigError(Exception):
@@ -9,32 +9,34 @@ class ConfigError(Exception):
         super().__init__(self.message)    
 
 def valida_seccion_default(config,logger):
-    """ Valida que el archivo de configuración tenga las opciones 
-            - log_level
-            - log_file
-            - acceso_base
-        configurada con valores que no sean nulos
+    """ Valida que el archivo de configuración tenga la opciones 
+            - acceso_base con valor no nulo
+            - base_dato  con valor no nulo
     """
-    logger.debug('Validando opciones de la seccion [default] del archivo redefinition.cfg')
-    opciones_default = ['log_level','log_file','acceso_base']
-    niveles_permitidos = ['DEBUG','INFO','WARNING','ERROR','CRITICAL'] 
+    logger.debug('Validando opciones "acceso_base" y "base_dato" de la seccion [default] ')
     l_error = False
-    try:         
-        for opt in opciones_default:
-            if not config.has_option('default',opt):
-                logger.error(f'Error: Debe aparecer la opción "{opt}" en la sección [default]')
+    try:  
+        if config.has_option('default','acceso_base'):
+            valor = config.get('default','acceso_base')
+            if not valor :
+                logger.error(f'Error: Opcion "acceso_base" no puede estar vacia en sección [default]')    
                 l_error = True
-            else:    
-                valor = config.get('default',opt)
-                if not valor :
-                    logger.error(f'Error: Opcion "{opt}" no puede estar vacia en sección [default]')    
-                    l_error = True
-                if opt == 'log_level' and valor.upper() not in niveles_permitidos:
-                    logger.error(f'Error: Opción "log_level" debe ser uno de {niveles_permitidos} en sección [default]')
-                    l_error = True
-                if opt == 'acceso_base' and valor.lower() not in ['si','no']:
-                    logger.error('Error: Opción "acceso_base" debe ser "si" o "no" en sección [default]')
-                    l_error = True  
+            if valor.lower() not in ['si','no']:
+                logger.error('Error: Opción "acceso_base" debe ser "si" o "no" en sección [default]')
+                l_error = True  
+        else:
+            logger.error(f'Error: Debe aparecer la opción "acceso_base" en la sección [default]')
+            l_error = True  
+
+        if config.has_option('default','base_dato'):
+            valor = config.get('default','base_dato')
+            if not valor :
+                logger.error(f'Error: Opcion "base_dato" no puede estar vacia en sección [default]')    
+                l_error = True
+        else:
+            logger.error(f'Error: Debe aparecer la opción "base_dato" en la sección [default]')
+            l_error = True  
+
         if l_error:
             raise ConfigError('Corrija el archivo redefinition.cfg y vuelva a ejecutar el programa')    
     except ConfigError as e:
@@ -76,7 +78,7 @@ def valida_seccion_db(config,logger):
 
     # Validamos si habrá acceso a la base de datos
     if not acceso_base:
-        logger.info('No habrá acceso a la base de datos. Se omite la validación de la sección [Database]')
+        logger.debug('No habrá acceso a la base de datos. Se omite la validación de la sección [Database]')
         return
     
     # Si habrá acceso a la base de datos, validamos las opciones de la sección [Database]
@@ -117,7 +119,7 @@ def valida_seccion_db(config,logger):
         logger.critical(f'Error inesperado al validar la sección [Database]: {e}')
         raise SystemExit()  
     else:
-        logger.debug('Sección [Database] del archivo redefinition.cfg validada correctamente')
+        logger.info('Sección [Database] del archivo redefinition.cfg validada correctamente')
 
 def valida_seccion_tablas(config,logger):
     """ Valida la sección [Tablas] del archivo redefinition.cfg """

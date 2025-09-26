@@ -28,3 +28,15 @@ SQL/ORA121/DEV_ODI_REPO/TABLA_PRUEBA/99_DROP_TABLA_PRUEBA.sql
 SQL/ORA121/DEV_ODI_REPO/TABLA_PRUEBA/300_CREA_INDEX_I_TABLA_PRUEBA.sql
 SQL/ORA121/DEV_ODI_REPO/TABLA_PRUEBA/303_REGISTER_TABLA_PRUEBA.sql
 SQL/ORA121/DEV_ODI_REPO/TABLA_PRUEBA/309_COPY_TABLA_PRUEBA.sql
+DDL/DDL_LOGMNR_TAB$.sql/logmnr_tab$.sql
+DDL/DDL_SNP_LSCHEMA.sql/SNP_LSCHEMA.sql
+DDL/DDL_TABLA_PRUEBA.sql/TABLA_PRUEBA.sql
+bin/Utils/__pycache__/utilitarios.cpython-313.pyc
+bin/Utils/__pycache__/valida_configuracion.cpython-313.pyc
+logs/redefinition.log
+DDLS/LOGMNR_TAB$.sql
+.gitignore
+DDLS/TABLA_PRUEBA.sql
+DDLS/SNP_LSCHEMA.sql
+.gitignore
+logs/redefinition.log

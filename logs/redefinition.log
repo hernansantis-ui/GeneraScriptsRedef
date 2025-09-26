@@ -1,7 +1,72 @@
-[DEBUG]:	2025-09-24 18:16:02	[utilitarios.py:41]: Logger creado con nivel DEBUG y archivo logs/redefinition.log 
-[DEBUG]:	2025-09-24 18:16:02	[valida_configuracion.py:190]: Validando archivo de configuración  
-[DEBUG]:	2025-09-24 18:16:02	[valida_configuracion.py:50]: Validando secciones del archivo redefinition.cfg 
-[DEBUG]:	2025-09-24 18:16:02	[valida_configuracion.py:68]: Secciones del archivo redefinition.cfg validadas correctamente 
-[DEBUG]:	2025-09-24 18:16:02	[valida_configuracion.py:18]: Validando opciones de la seccion [default] del archivo redefinition.cfg 
-[ERROR]:	2025-09-24 18:16:02	[valida_configuracion.py:25]: Error: Debe aparecer la opción "acceso_base" en la sección [default] 
-[CRITICAL]:	2025-09-24 18:16:02	[valida_configuracion.py:41]: Corrija el archivo redefinition.cfg y vuelva a ejecutar el programa 
+[DEBUG]:	2025-09-25 23:07:34	[Utils.py:41]: Logger creado con nivel DEBUG y archivo logs/redefinition.log 
+[DEBUG]:	2025-09-25 23:07:34	[Utils_validacion.py:192]: Validando archivo de configuración  
+[DEBUG]:	2025-09-25 23:07:34	[Utils_validacion.py:52]: Validando secciones del archivo redefinition.cfg 
+[DEBUG]:	2025-09-25 23:07:34	[Utils_validacion.py:70]: Secciones del archivo redefinition.cfg validadas correctamente 
+[DEBUG]:	2025-09-25 23:07:34	[Utils_validacion.py:16]: Validando opciones "acceso_base" y "base_dato" de la seccion [default]  
+[DEBUG]:	2025-09-25 23:07:34	[Utils_validacion.py:74]: Validando sección [Database] del archivo redefinition.cfg 
+[DEBUG]:	2025-09-25 23:07:34	[Utils_validacion.py:81]: No habrá acceso a la base de datos. Se omite la validación de la sección [Database] 
+[DEBUG]:	2025-09-25 23:07:34	[Utils_validacion.py:126]: Validando sección [Tablas] del archivo redefinition.cfg 
+[DEBUG]:	2025-09-25 23:07:34	[Utils_validacion.py:141]: Validando tabla dev_odi_repo.tabla_prueba, owner=['DEV_ODI_REPO', 'TABLA_PRUEBA'] 
+[DEBUG]:	2025-09-25 23:07:34	[Utils_validacion.py:141]: Validando tabla dev_odi_repo.snp_lschema, owner=['DEV_ODI_REPO', 'SNP_LSCHEMA'] 
+[DEBUG]:	2025-09-25 23:07:34	[Utils_validacion.py:154]: Sección [Tablas] del archivo redefinition.cfg validada correctamente 
+[DEBUG]:	2025-09-25 23:07:34	[Utils_validacion.py:157]: Validando sección [Tablespaces] del archivo redefinition.cfg 
+[DEBUG]:	2025-09-25 23:07:34	[Utils_validacion.py:186]: Sección [Tablespaces] del archivo redefinition.cfg validada correctamente 
+[INFO]:	2025-09-25 23:07:34	[Utils_validacion.py:208]: Archivo de configuración validado 
+[DEBUG]:	2025-09-25 23:07:34	[Utils_scripts.py:117]: Inicio del proceso de creación de scripts para redefinición de tablas 
+[DEBUG]:	2025-09-25 23:07:34	[Utils.py:109]: Obteniendo parámetros para la tabla DEV_ODI_REPO.TABLA_PRUEBA desde el archivo de configuración. 
+[DEBUG]:	2025-09-25 23:07:34	[Utils.py:118]: DEV_ODI_REPO.TABLA_PRUEBA: Columnas a encriptar=['LSCHEMA_NAME', 'EXT_VERSION', 'I_TGT_DB_LS'] 
+[DEBUG]:	2025-09-25 23:07:34	[Utils_scripts.py:122]: Procesando tabla DEV_ODI_REPO.TABLA_PRUEBA columnas a encriptar ['LSCHEMA_NAME', 'EXT_VERSION', 'I_TGT_DB_LS'] 
+[DEBUG]:	2025-09-25 23:07:34	[Utils.py:125]: Creando directorio para base_dato='BDOT', esquema='DEV_ODI_REPO', tabla='TABLA_PRUEBA' 
+[DEBUG]:	2025-09-25 23:07:34	[Utils.py:129]: Directorio creado: D:\Proyectos\Transbank\Codigos\Encriptador\SQL\BDOT\DEV_ODI_REPO\TABLA_PRUEBA 
+[DEBUG]:	2025-09-25 23:07:34	[Utils_scripts.py:79]: Creando scripts de redefinición para la tabla DEV_ODI_REPO.TABLA_PRUEBA desde DDL 
+[DEBUG]:	2025-09-25 23:07:34	[Utils_scripts.py:39]: Creando scripts de redefinición D:\Proyectos\Transbank\Codigos\Encriptador\SQL\BDOT\DEV_ODI_REPO\TABLA_PRUEBA\01_CREA_I_TABLA_PRUEBA.sql  
+[DEBUG]:	2025-09-25 23:07:34	[Utils_ddl.py:32]: Separando DDL de la tabla TABLA_PRUEBA  y comentarios 
+[DEBUG]:	2025-09-25 23:07:34	[Utils_ddl.py:2]: Generador para leer el archivo DDL D:\Proyectos\Transbank\Codigos\Encriptador\DDLS\DEV_ODI_REPO.TABLA_PRUEBA.sql 
+[DEBUG]:	2025-09-25 23:07:34	[Utils_ddl.py:53]: DDL de la tabla TABLA_PRUEBA y DDL de los índices separados correctamente en archivos distintos 
+[DEBUG]:	2025-09-25 23:07:34	[Utils_ddl.py:59]: Reemplazando tab por espacios en el archivo DDL de la tabla DEV_ODI_REPO.TABLA_PRUEBA 
+[DEBUG]:	2025-09-25 23:07:34	[Utils_ddl.py:64]: Procesando archivo D:\Proyectos\Transbank\Codigos\Encriptador\SQL\BDOT\DEV_ODI_REPO\TABLA_PRUEBA\01_CREA_I_TABLA_PRUEBA.sql para reemplazar tab por espacios y eliminar dobles comillas 
+[DEBUG]:	2025-09-25 23:07:34	[Utils_ddl.py:2]: Generador para leer el archivo DDL D:\Proyectos\Transbank\Codigos\Encriptador\SQL\BDOT\DEV_ODI_REPO\TABLA_PRUEBA\01_CREA_I_TABLA_PRUEBA.sql 
+[DEBUG]:	2025-09-25 23:07:34	[Utils_ddl.py:74]: Tab y comillas reemplazados por espacios en el archivo D:\Proyectos\Transbank\Codigos\Encriptador\SQL\BDOT\DEV_ODI_REPO\TABLA_PRUEBA\01_CREA_I_TABLA_PRUEBA.sql correctamente 
+[DEBUG]:	2025-09-25 23:07:34	[Utils_ddl.py:91]: Scripts de redefinición D:\Proyectos\Transbank\Codigos\Encriptador\SQL\BDOT\DEV_ODI_REPO\TABLA_PRUEBA\01_CREA_I_TABLA_PRUEBA.sql creado correctamente 
+[DEBUG]:	2025-09-25 23:07:34	[Utils_scripts.py:56]: Scripts de redefinición D:\Proyectos\Transbank\Codigos\Encriptador\SQL\BDOT\DEV_ODI_REPO\TABLA_PRUEBA\01_CREA_I_TABLA_PRUEBA.sql creados correctamente  
+[DEBUG]:	2025-09-25 23:07:34	[Utils_scripts.py:14]: Creando scripts de redefinición D:\Proyectos\Transbank\Codigos\Encriptador\SQL\BDOT\DEV_ODI_REPO\TABLA_PRUEBA\300_CREA_INDEX_I_TABLA_PRUEBA.sql  
+[DEBUG]:	2025-09-25 23:07:34	[Utils_ddl.py:10]: Separando DDL de los índices de la tabla TABLA_PRUEBA en un archivo distinto 
+[DEBUG]:	2025-09-25 23:07:34	[Utils_ddl.py:2]: Generador para leer el archivo DDL D:\Proyectos\Transbank\Codigos\Encriptador\DDLS\DEV_ODI_REPO.TABLA_PRUEBA.sql 
+[DEBUG]:	2025-09-25 23:07:34	[Utils_ddl.py:27]: DDL de los índices de la tabla TABLA_PRUEBA separados correctamente en un archivo distinto 
+[DEBUG]:	2025-09-25 23:07:34	[Utils_ddl.py:59]: Reemplazando tab por espacios en el archivo DDL de la tabla DEV_ODI_REPO.TABLA_PRUEBA 
+[DEBUG]:	2025-09-25 23:07:34	[Utils_ddl.py:64]: Procesando archivo D:\Proyectos\Transbank\Codigos\Encriptador\SQL\BDOT\DEV_ODI_REPO\TABLA_PRUEBA\300_CREA_INDEX_I_TABLA_PRUEBA.sql para reemplazar tab por espacios y eliminar dobles comillas 
+[DEBUG]:	2025-09-25 23:07:34	[Utils_ddl.py:2]: Generador para leer el archivo DDL D:\Proyectos\Transbank\Codigos\Encriptador\SQL\BDOT\DEV_ODI_REPO\TABLA_PRUEBA\300_CREA_INDEX_I_TABLA_PRUEBA.sql 
+[DEBUG]:	2025-09-25 23:07:34	[Utils_ddl.py:74]: Tab y comillas reemplazados por espacios en el archivo D:\Proyectos\Transbank\Codigos\Encriptador\SQL\BDOT\DEV_ODI_REPO\TABLA_PRUEBA\300_CREA_INDEX_I_TABLA_PRUEBA.sql correctamente 
+[DEBUG]:	2025-09-25 23:07:34	[Utils_ddl.py:91]: Scripts de redefinición D:\Proyectos\Transbank\Codigos\Encriptador\SQL\BDOT\DEV_ODI_REPO\TABLA_PRUEBA\300_CREA_INDEX_I_TABLA_PRUEBA.sql creado correctamente 
+[DEBUG]:	2025-09-25 23:07:34	[Utils_scripts.py:32]: Scripts de redefinición D:\Proyectos\Transbank\Codigos\Encriptador\SQL\BDOT\DEV_ODI_REPO\TABLA_PRUEBA\300_CREA_INDEX_I_TABLA_PRUEBA.sql creados correctamente  
+[DEBUG]:	2025-09-25 23:07:34	[Utils_scripts.py:91]: Archivo D:\Proyectos\Transbank\Codigos\Encriptador\SQL\BDOT\DEV_ODI_REPO\TABLA_PRUEBA\303_REGISTER_TABLA_PRUEBA.sql 
+[DEBUG]:	2025-09-25 23:07:34	[Utils_scripts.py:106]: Scripts de redefinición creados  
+[DEBUG]:	2025-09-25 23:07:34	[Utils.py:109]: Obteniendo parámetros para la tabla DEV_ODI_REPO.SNP_LSCHEMA desde el archivo de configuración. 
+[DEBUG]:	2025-09-25 23:07:34	[Utils.py:118]: DEV_ODI_REPO.SNP_LSCHEMA: Columnas a encriptar=[] 
+[DEBUG]:	2025-09-25 23:07:34	[Utils_scripts.py:122]: Procesando tabla DEV_ODI_REPO.SNP_LSCHEMA columnas a encriptar [] 
+[DEBUG]:	2025-09-25 23:07:34	[Utils.py:125]: Creando directorio para base_dato='BDOT', esquema='DEV_ODI_REPO', tabla='SNP_LSCHEMA' 
+[DEBUG]:	2025-09-25 23:07:34	[Utils.py:129]: Directorio creado: D:\Proyectos\Transbank\Codigos\Encriptador\SQL\BDOT\DEV_ODI_REPO\SNP_LSCHEMA 
+[DEBUG]:	2025-09-25 23:07:34	[Utils_scripts.py:79]: Creando scripts de redefinición para la tabla DEV_ODI_REPO.SNP_LSCHEMA desde DDL 
+[DEBUG]:	2025-09-25 23:07:34	[Utils_scripts.py:39]: Creando scripts de redefinición D:\Proyectos\Transbank\Codigos\Encriptador\SQL\BDOT\DEV_ODI_REPO\SNP_LSCHEMA\01_CREA_I_SNP_LSCHEMA.sql  
+[DEBUG]:	2025-09-25 23:07:34	[Utils_ddl.py:32]: Separando DDL de la tabla SNP_LSCHEMA  y comentarios 
+[DEBUG]:	2025-09-25 23:07:34	[Utils_ddl.py:2]: Generador para leer el archivo DDL D:\Proyectos\Transbank\Codigos\Encriptador\DDLS\DEV_ODI_REPO.SNP_LSCHEMA.sql 
+[DEBUG]:	2025-09-25 23:07:34	[Utils_ddl.py:53]: DDL de la tabla SNP_LSCHEMA y DDL de los índices separados correctamente en archivos distintos 
+[DEBUG]:	2025-09-25 23:07:34	[Utils_ddl.py:59]: Reemplazando tab por espacios en el archivo DDL de la tabla DEV_ODI_REPO.SNP_LSCHEMA 
+[DEBUG]:	2025-09-25 23:07:34	[Utils_ddl.py:64]: Procesando archivo D:\Proyectos\Transbank\Codigos\Encriptador\SQL\BDOT\DEV_ODI_REPO\SNP_LSCHEMA\01_CREA_I_SNP_LSCHEMA.sql para reemplazar tab por espacios y eliminar dobles comillas 
+[DEBUG]:	2025-09-25 23:07:34	[Utils_ddl.py:2]: Generador para leer el archivo DDL D:\Proyectos\Transbank\Codigos\Encriptador\SQL\BDOT\DEV_ODI_REPO\SNP_LSCHEMA\01_CREA_I_SNP_LSCHEMA.sql 
+[DEBUG]:	2025-09-25 23:07:34	[Utils_ddl.py:74]: Tab y comillas reemplazados por espacios en el archivo D:\Proyectos\Transbank\Codigos\Encriptador\SQL\BDOT\DEV_ODI_REPO\SNP_LSCHEMA\01_CREA_I_SNP_LSCHEMA.sql correctamente 
+[DEBUG]:	2025-09-25 23:07:34	[Utils_ddl.py:91]: Scripts de redefinición D:\Proyectos\Transbank\Codigos\Encriptador\SQL\BDOT\DEV_ODI_REPO\SNP_LSCHEMA\01_CREA_I_SNP_LSCHEMA.sql creado correctamente 
+[DEBUG]:	2025-09-25 23:07:34	[Utils_scripts.py:56]: Scripts de redefinición D:\Proyectos\Transbank\Codigos\Encriptador\SQL\BDOT\DEV_ODI_REPO\SNP_LSCHEMA\01_CREA_I_SNP_LSCHEMA.sql creados correctamente  
+[DEBUG]:	2025-09-25 23:07:34	[Utils_scripts.py:14]: Creando scripts de redefinición D:\Proyectos\Transbank\Codigos\Encriptador\SQL\BDOT\DEV_ODI_REPO\SNP_LSCHEMA\300_CREA_INDEX_I_SNP_LSCHEMA.sql  
+[DEBUG]:	2025-09-25 23:07:34	[Utils_ddl.py:10]: Separando DDL de los índices de la tabla SNP_LSCHEMA en un archivo distinto 
+[DEBUG]:	2025-09-25 23:07:34	[Utils_ddl.py:2]: Generador para leer el archivo DDL D:\Proyectos\Transbank\Codigos\Encriptador\DDLS\DEV_ODI_REPO.SNP_LSCHEMA.sql 
+[DEBUG]:	2025-09-25 23:07:34	[Utils_ddl.py:27]: DDL de los índices de la tabla SNP_LSCHEMA separados correctamente en un archivo distinto 
+[DEBUG]:	2025-09-25 23:07:34	[Utils_ddl.py:59]: Reemplazando tab por espacios en el archivo DDL de la tabla DEV_ODI_REPO.SNP_LSCHEMA 
+[DEBUG]:	2025-09-25 23:07:34	[Utils_ddl.py:64]: Procesando archivo D:\Proyectos\Transbank\Codigos\Encriptador\SQL\BDOT\DEV_ODI_REPO\SNP_LSCHEMA\300_CREA_INDEX_I_SNP_LSCHEMA.sql para reemplazar tab por espacios y eliminar dobles comillas 
+[DEBUG]:	2025-09-25 23:07:34	[Utils_ddl.py:2]: Generador para leer el archivo DDL D:\Proyectos\Transbank\Codigos\Encriptador\SQL\BDOT\DEV_ODI_REPO\SNP_LSCHEMA\300_CREA_INDEX_I_SNP_LSCHEMA.sql 
+[DEBUG]:	2025-09-25 23:07:34	[Utils_ddl.py:74]: Tab y comillas reemplazados por espacios en el archivo D:\Proyectos\Transbank\Codigos\Encriptador\SQL\BDOT\DEV_ODI_REPO\SNP_LSCHEMA\300_CREA_INDEX_I_SNP_LSCHEMA.sql correctamente 
+[DEBUG]:	2025-09-25 23:07:34	[Utils_ddl.py:91]: Scripts de redefinición D:\Proyectos\Transbank\Codigos\Encriptador\SQL\BDOT\DEV_ODI_REPO\SNP_LSCHEMA\300_CREA_INDEX_I_SNP_LSCHEMA.sql creado correctamente 
+[DEBUG]:	2025-09-25 23:07:34	[Utils_scripts.py:32]: Scripts de redefinición D:\Proyectos\Transbank\Codigos\Encriptador\SQL\BDOT\DEV_ODI_REPO\SNP_LSCHEMA\300_CREA_INDEX_I_SNP_LSCHEMA.sql creados correctamente  
+[DEBUG]:	2025-09-25 23:07:34	[Utils_scripts.py:91]: Archivo D:\Proyectos\Transbank\Codigos\Encriptador\SQL\BDOT\DEV_ODI_REPO\SNP_LSCHEMA\303_REGISTER_SNP_LSCHEMA.sql 
+[DEBUG]:	2025-09-25 23:07:34	[Utils_scripts.py:106]: Scripts de redefinición creados  
+[DEBUG]:	2025-09-25 23:07:34	[Utils_scripts.py:132]: Proceso de creación de scripts finalizado 

@@ -6,12 +6,15 @@ encriptandolas y comprimiendolas
 
 """
 
-from pathlib import Path
-from Utils.valida_configuracion import valida_archivo_config
-from Utils.Util_scripts  import inicia_scripts_redefinicion
-from Utils.utilitarios   import crea_config_parser
 
-CONFIG_FILE = 'redefinition.cfg'
+from pathlib import Path
+from Utils.Utils_validacion import valida_archivo_config
+from Utils.Utils_scripts  import inicia_scripts_redefinicion
+from Utils.Utils   import crea_config_parser
+
+CONFIG_FILE  = 'redefinition.cfg'
+DIR_PROYECTO = Path.cwd()
+
 
 def main():
     """ Función principal del programa :
@@ -23,8 +26,7 @@ def main():
     config,logger = crea_config_parser(CONFIG_FILE)
 
     valida_archivo_config(config,logger)
-    dir_proyecto = Path.cwd()
-    inicia_scripts_redefinicion(dir_proyecto,config,logger)
+    inicia_scripts_redefinicion(DIR_PROYECTO,config,logger)
     
 if __name__ == "__main__":
         main()
