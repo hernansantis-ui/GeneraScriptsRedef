@@ -8,9 +8,9 @@ encriptandolas y comprimiendolas
 
 
 from pathlib import Path
-from Utils.Utils_validacion import valida_archivo_config
-from Utils.Utils_scripts  import inicia_scripts_redefinicion
-from Utils.Utils   import crea_config_parser
+from Utils.validacionConfig import valida_archivo_config
+from Utils.creaScriptsRedef  import inicia_scripts_redefinicion
+from Utils.utilitariosSys   import crea_config_parser
 
 
 DIR_PROYECTO = Path.cwd()
@@ -23,7 +23,6 @@ def main():
             - Validar archivo de configuración        
             - Crear los script de redefinición de tablas
     """
-    print(DIR_PROYECTO)
     config,logger = crea_config_parser(CONFIG_FILE)
 
     valida_archivo_config(config,logger)
