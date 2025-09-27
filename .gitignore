@@ -1,6 +1,5 @@
 /SQL/**
-/Utils/**
 /logs/redefinition.log
 /DDLS/**
 /config/redefinition.cfg
-prueba.py
+Utils/__pycache__

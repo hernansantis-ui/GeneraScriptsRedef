@@ -1,16 +1,16 @@
 from Utils.baseDatos     import (
                                 crea_script_tabla_from_db,
                                 crea_script_indices_from_db,
-                                obtener_lista_indices
                                 )
 from Utils.UtilidadesDDL import (
-    obtener_lista_indices,
+    obtener_dict_indices,
     cambia_nombre_a_interino,
     cambia_tablespace,
     crea_script_from_ddl,
     reemplaza_tabs_comillas,
     encripta_columnas,
     agrega_compresion_indice,
+    agrega_compresion_tabla,
     verificar_largo_indices,
     agrega_paralelismo,
     llena_template_303
@@ -85,6 +85,8 @@ def crea_script_redef_01(dir_proyecto,sql_dir,config,archivo_salida, esquema, ta
         encripta_columnas(sql_dir,archivo_salida,columnas,logger)
         # Se cambian el nombre de la tabla a tabla interina (I_"tabla")
         cambia_nombre_a_interino(sql_dir,archivo_salida,esquema,logger)
+        # Incorpora parametros de compresion de tabla
+        agrega_compresion_tabla(sql_dir, archivo_salida, logger)
     except Exception as e:
         logger.critical(f'Error inesperado al crear el scripts {archivo_salida}: {e}')
         raise SystemExit()  
@@ -94,13 +96,15 @@ def crea_script_redef_01(dir_proyecto,sql_dir,config,archivo_salida, esquema, ta
 def crea_sript_redef_303(sql_dir, archivo_salida, script_300, esquema, tabla, template,logger):
     logger.debug(f"Creando scripts de redefinición {archivo_salida} ")
     #   Obtener la lista de indices desde el script_300
-    lista_indices_original = obtener_lista_indices(script_300, esquema, logger)
+    logger.debug(f'Obteniendo diccionario de indices originales')
+    dict_indices = obtener_dict_indices(script_300, esquema, logger)
     #   Verificar los indices con mas de 28 caracteres
-    lista_indices = verificar_largo_indices(sql_dir, script_300, lista_indices_original, logger)
+    logger.debug(f'Completa indices originales con nuevos nombres')
+    dict_indices = verificar_largo_indices(sql_dir, script_300, dict_indices, logger)
     #   Componer los nombres de los indices en script_300, si aplica
     #   Rellenar el template REGISTER
-    llena_template_303(sql_dir,esquema, tabla, lista_indices,lista_indices_original, archivo_salida,template, logger)
-
+    logger.debug(f'Rellena el template con los indices originales y los nuevos')
+    llena_template_303(sql_dir,esquema, tabla, dict_indices, archivo_salida,template, logger)
 
 def crea_script_redef_general(template,archivo_script,esquema,tabla,parallel,logger):
     with open(template, "r") as archivo:

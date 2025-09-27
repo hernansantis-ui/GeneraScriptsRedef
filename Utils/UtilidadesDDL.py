@@ -6,20 +6,20 @@ def generador_archivo(nombre_archivo, logger):
         for linea in archivo:
             yield linea.strip()
 
-def obtener_lista_indices(script_300,esquema,logger):
+def obtener_dict_indices(script_300,esquema,logger):
     logger.debug(f'{esquema=}, {script_300}')
-    lista_indices=[]
+    dict_indices={}
     lineas_archivo = generador_archivo(script_300,logger)
     patron = rf'{esquema}\.I_(\$|\w+)+'   
     for linea in lineas_archivo:
         match = re.search(patron,linea)
         if match:
             grupo=match.group(0)
-            lista_indices.append(grupo.split('.')[1][2:])
+            dict_indices[grupo.split('.')[1][2:]]=None
     
-    return lista_indices
+    return dict_indices
 
-def modificar_script_300(sql_dir,script_300,lista_nueva,lista_vieja,logger):
+def modificar_script_300(sql_dir,script_300,dict_indices,logger):
     pass
     logger.debug('Modificamos el script 300 con los nuevos nombres de indices')
     archivo_salida = sql_dir/'temporal.sql'
@@ -27,44 +27,49 @@ def modificar_script_300(sql_dir,script_300,lista_nueva,lista_vieja,logger):
     lineas_archivo = generador_archivo(script_300,logger)
     with open(archivo_salida,'w') as archivo:
         for linea in lineas_archivo:
-            for contador in range(len(lista_vieja)):
-                indice = lista_vieja[contador]
-                linea = linea.replace(indice,lista_nueva[contador])
+            for key,indice in dict_indices.items():
+                linea = linea.replace(key,indice)
             archivo.write(linea+'\n')            
     script_300.unlink()
     archivo_salida.rename(script_300)
 
-def verificar_largo_indices(sql_dir,script_300,lista_indices,logger):
-    lista_nueva=[]
+
+def verificar_largo_indices(sql_dir,script_300,dict_indices,logger):
+    LARGO_INDICE=28
     contador = 1
-    for indice in lista_indices:
-        if len(indice) > 28:
-            # Si el largo es mayor a 28, debemos eliminar los
+    for indice in dict_indices.keys():
+        if len(indice) > LARGO_INDICE:
+            # Si el largo es mayor a LARGO_INDICE, debemos eliminar los
             # últimos 2 caracteres y reemplazar por un contador
-            n_indice = f'{indice[0:-2]}{contador:02d}'
+            valor_indice = f'{indice[0:-2]}{contador:02d}'
             contador +=1
         else:
-            n_indice = indice            
-        lista_nueva.append(n_indice)
-    if contador > 1 :    
-        modificar_script_300(sql_dir,script_300,lista_nueva,lista_indices,logger)        
-    return lista_nueva
+            valor_indice = indice            
+        dict_indices[indice]=valor_indice    
+    if contador > 1 :    # Algun indice resulto mayor al LARGO_INDICE
+        modificar_script_300(sql_dir,script_300,dict_indices,logger)        
+    return dict_indices
 
-def llena_template_303(sql_dir,esquema, tabla, lista_indices, lista_original, archivo_salida, template, logger):
-    
-    with open(template, "r") as archivo:
-        texto = archivo.read()
+def llena_template_303(sql_dir,esquema, tabla, dict_indices, archivo_salida, template, logger):
+    logger.debug('Llenamos el template 303')
+    try:
+        with open(template, "r") as archivo:
+            texto = archivo.read()
 
-    with open(archivo_salida, "w") as archivo:
-        for i in range(len(lista_original)):
-            archivo.write(
-                texto.replace("TABLA", tabla)
-                .replace("ESQUEMA", esquema)
-                .replace("INDICE_ORIGINAL", lista_original[i])
-                .replace("INDICE_NUEVO",lista_indices[i])
-            )
-            archivo.write("\n")
-        archivo.write("EXIT")
+        with open(archivo_salida, "w") as archivo:
+            for indice_original,indice_nuevo in dict_indices.items():
+                archivo.write(
+                    texto.replace("TABLA", tabla)
+                    .replace("ESQUEMA", esquema)
+                    .replace("INDICE_ORIGINAL", indice_original)
+                    .replace("INDICE_NUEVO",indice_nuevo)
+                )
+                archivo.write("\n")
+            archivo.write("EXIT")
+    except Exception as e:
+        logger.critical(f"Error al rellenar template 303: {str(e)}"
+        )
+        sys.exit(1)
 
 def separa_ddl_indices(ddls_dir,esquema, tabla, archivo_salida, logger):
     """ Función para separar el DDL de los índices en un archivos distinto
@@ -224,6 +229,31 @@ def agrega_compresion_indice(sql_dir,archivo_redef,logger):
     except Exception as e:
         logger.critical(f"Error al incorporar compresión en el DDL de índices: {str(e)}")
         raise SystemError()
+
+def agrega_compresion_tabla(sql_dir, archivo_redef, logger):
+    logger.debug("Incorporando compresión avanzada en el DDL de tabla.")
+    #   Buscamos la palabra TABLESPACE e incorporamos la compresion de tabla antes
+    archivo_salida = sql_dir /"temporal.sql"
+
+    try:
+        lineas_archivos = generador_archivo(archivo_redef,logger)
+        patron=r'.*(TABLESPACE\s*\w+)'
+        with open(archivo_salida,'w') as archivo:
+            for linea in lineas_archivos:
+                match = re.search(patron,linea)
+                if match:
+                    grupo = match.group(0)
+                    linea = linea.replace(
+                        grupo, f"ROW STORE COMPRESS ADVANCED\n{grupo}"
+                    )
+                archivo.write(linea+'\n')
+        archivo_redef.unlink()
+        archivo_salida.rename(archivo_redef)
+        logger.debug("Compresión avanzada incorporada correctamente en el DDL de tablas.")
+    except Exception as e:
+        logger.critical(f"Error al incorporar compresión en el DDL de tablas: {str(e)}")
+        raise SystemError()
+
 
 def agrega_paralelismo(sql_dir,archivo_redef,parallel,logger):
     logger.debug("Agregando sentencias para ejecutar paralelismo en la creacion de los indices")

@@ -34,7 +34,6 @@ def crea_script_tabla_from_db(config,esquema, tabla, archivo_salida,logger):
             dbms_metadata.set_transform_param(DBMS_METADATA.SESSION_TRANSFORM,'CONSTRAINTS', false); 
             dbms_metadata.set_transform_param(DBMS_METADATA.SESSION_TRANSFORM,'REF_CONSTRAINTS', false); 
             dbms_metadata.set_transform_param(DBMS_METADATA.SESSION_TRANSFORM,'SQLTERMINATOR', true); 
-            dbms_metadata.set_transform_param(DBMS_METADATA.SESSION_TRANSFORM,'TABLE_COMPRESSION_CLAUSE','ROW STORE COMPRESS ADVANCED');
          end;"""
     )
     #   Extraemos el DDL de la tabla
