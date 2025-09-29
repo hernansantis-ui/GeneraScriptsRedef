@@ -1,5 +1,6 @@
 import sys
 import re
+from turtle import clear
 def generador_archivo(nombre_archivo, logger):
     logger.debug(f'Generador para leer el archivo DDL {nombre_archivo}')   
     with open(nombre_archivo, 'r') as archivo:
@@ -146,8 +147,8 @@ def cambia_tablespace(sql_dir,archivo_redef, tablespace, logger):
     archivo_salida =  sql_dir/"temporal.sql"   
     try:
         lineas_archivo = generador_archivo(archivo_redef,logger)
-        patron = r".*(TABLESPACE\s*\w+)"
-
+        #patron = r".*(TABLESPACE\s*)(\w|\w(_\w)*)"
+        patron=r'.*(TABLESPACE\s*)(\w+)'
         with open(archivo_salida,'w') as archivo:
 
             for linea in lineas_archivo:
@@ -172,7 +173,7 @@ def encripta_columnas(sql_dir,archivo_redef,columnas, logger):
         with open(archivo_salida,'w') as archivo: 
             for linea in lineas_archivo:
                 for col in columnas:
-                    patron = rf".*{col}.*(VARCHAR2|NUMBER).*\(\d+(,.*\d+|.*CHAR.*)*\)"
+                    patron = rf"^{col}\s*(VARCHAR2|NUMBER).*\(\d+(,.*\d+|.*CHAR.*|.*BYTE.*)*\)"
                     match = re.search(patron, linea)
                     if match:
                         grupo = match.group(0)
@@ -192,7 +193,7 @@ def cambia_nombre_a_interino(sql_dir,archivo_redef,esquema,logger):
     archivo_salida = sql_dir / "temporal.sql"
     try:
         lineas_archivo = generador_archivo(archivo_redef,logger)
-        patron = f'{esquema}.'
+        patron = fr'{esquema}\.'
         with open(archivo_salida,'w') as archivo:
             for linea in lineas_archivo:
                 match = re.search(patron,linea)
@@ -212,7 +213,6 @@ def agrega_compresion_indice(sql_dir,archivo_redef,logger):
     logger.debug("Incorporando compresión avanzada en el DDL de índices.")
     #   Buscamos la palabra TABLESPACE e incorporamos la compresion de indices antes
     archivo_salida = sql_dir /"temporal.sql"
-
     try:
         lineas_archivos = generador_archivo(archivo_redef,logger)
         patron=r'.*(TABLESPACE\s*\w+)'
@@ -240,13 +240,12 @@ def agrega_compresion_tabla(sql_dir, archivo_redef, logger):
         patron=r'.*(TABLESPACE\s*\w+)'
         with open(archivo_salida,'w') as archivo:
             for linea in lineas_archivos:
-                match = re.search(patron,linea)
-                if match:
-                    grupo = match.group(0)
-                    linea = linea.replace(
-                        grupo, f"ROW STORE COMPRESS ADVANCED\n{grupo}"
-                    )
-                archivo.write(linea+'\n')
+                if 'NOCOMPRESS' not in linea:
+                    match = re.search(patron,linea)
+                    if match:
+                        grupo = match.group(0)
+                        linea = linea.replace(grupo, f"ROW STORE COMPRESS ADVANCED\n{grupo}" )
+                    archivo.write(linea+'\n')
         archivo_redef.unlink()
         archivo_salida.rename(archivo_redef)
         logger.debug("Compresión avanzada incorporada correctamente en el DDL de tablas.")

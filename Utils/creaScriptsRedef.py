@@ -18,7 +18,8 @@ from Utils.UtilidadesDDL import (
 from Utils.utilitariosSys        import (
                                 crea_directorio_SQL, 
                                 get_parametros_tablas,
-                                get_parametros_tbs
+                                get_parametros_tbs,
+                                is_archivo_vacio
                                 )
 
 def crea_script_redef_300(dir_proyecto,sql_dir,config,archivo_salida,esquema, tabla,logger):
@@ -41,20 +42,24 @@ def crea_script_redef_300(dir_proyecto,sql_dir,config,archivo_salida,esquema, ta
         else:
             # Se crea script desde la base
             crea_script_indices_from_db(config, esquema, tabla, archivo_salida,logger)
+        # Verificamos que el archivo de indices no este vacio
+        if is_archivo_vacio(archivo_salida):
+            pass
+        else:    
+            # reemplazamos tabs y comillas dobles
+            reemplaza_tabs_comillas(sql_dir, esquema, tabla, archivo_salida, logger)
+            # Se cambia el nombres de tabla a tabla interina(I_"tabla")
+            cambia_nombre_a_interino(sql_dir, archivo_salida, esquema, logger)
+            # Se cambia el nombre de los tablespaces, si aplica
+            if habilita and tablespace != None:
+                cambia_tablespace(sql_dir, archivo_salida, tablespace, logger)
 
-        # reemplazamos tabs y comillas dobles
-        reemplaza_tabs_comillas(sql_dir, esquema, tabla, archivo_salida, logger)
-        # Se cambia el nombre de los tablespaces, si aplica
-        if habilita and tablespace != None:
-            cambia_tablespace(sql_dir, archivo_salida, tablespace, logger)
-
-        # Se agrega la sentencia de compresion
-        agrega_compresion_indice(sql_dir, archivo_salida, logger)
-        # Se cambia el nombres de tabla a tabla interina(I_"tabla")
-        cambia_nombre_a_interino(sql_dir,archivo_salida,esquema,logger)
-        # Agrega el paralelismo, si aplica
-        if parallel != 0 :
-            agrega_paralelismo(sql_dir,archivo_salida,parallel,logger)
+            # Se agrega la sentencia de compresion
+            agrega_compresion_indice(sql_dir, archivo_salida, logger)
+            # Agrega el paralelismo, si aplica
+            if parallel != 0 :
+                agrega_paralelismo(sql_dir,archivo_salida,parallel,logger)
+            
     except Exception as e:
         logger.critical(f'Error inesperado al crear  {archivo_salida} : {e}')
         raise SystemExit()  
@@ -83,10 +88,10 @@ def crea_script_redef_01(dir_proyecto,sql_dir,config,archivo_salida, esquema, ta
             cambia_tablespace(sql_dir, archivo_salida, tablespace, logger)
         # Se encriptan las columnas, si hay
         encripta_columnas(sql_dir,archivo_salida,columnas,logger)
-        # Se cambian el nombre de la tabla a tabla interina (I_"tabla")
-        cambia_nombre_a_interino(sql_dir,archivo_salida,esquema,logger)
         # Incorpora parametros de compresion de tabla
         agrega_compresion_tabla(sql_dir, archivo_salida, logger)
+        # Se cambian el nombre de la tabla a tabla interina (I_"tabla")
+        cambia_nombre_a_interino(sql_dir, archivo_salida, esquema, logger)
     except Exception as e:
         logger.critical(f'Error inesperado al crear el scripts {archivo_salida}: {e}')
         raise SystemExit()  
@@ -95,16 +100,24 @@ def crea_script_redef_01(dir_proyecto,sql_dir,config,archivo_salida, esquema, ta
 
 def crea_sript_redef_303(sql_dir, archivo_salida, script_300, esquema, tabla, template,logger):
     logger.debug(f"Creando scripts de redefinición {archivo_salida} ")
-    #   Obtener la lista de indices desde el script_300
-    logger.debug(f'Obteniendo diccionario de indices originales')
-    dict_indices = obtener_dict_indices(script_300, esquema, logger)
-    #   Verificar los indices con mas de 28 caracteres
-    logger.debug(f'Completa indices originales con nuevos nombres')
-    dict_indices = verificar_largo_indices(sql_dir, script_300, dict_indices, logger)
-    #   Componer los nombres de los indices en script_300, si aplica
-    #   Rellenar el template REGISTER
-    logger.debug(f'Rellena el template con los indices originales y los nuevos')
-    llena_template_303(sql_dir,esquema, tabla, dict_indices, archivo_salida,template, logger)
+    if is_archivo_vacio(script_300):
+        script_300.unlink()
+        pass
+    else:
+        #   Obtener la lista de indices desde el script_300
+        logger.debug(f'Obteniendo diccionario de indices originales')
+        dict_indices = obtener_dict_indices(script_300, esquema, logger)
+        #   Verificar los indices con mas de 28 caracteres
+        logger.debug(f'Completa indices originales con nuevos nombres')
+        dict_indices = verificar_largo_indices(sql_dir, script_300, dict_indices, logger)
+        #   Componer los nombres de los indices en script_300, si aplica
+        #   Rellenar el template REGISTER
+        logger.debug(f'Rellena el template con los indices originales y los nuevos')
+        llena_template_303(sql_dir,esquema, tabla, dict_indices, archivo_salida,template, logger)
+
+
+
+
 
 def crea_script_redef_general(template,archivo_script,esquema,tabla,parallel,logger):
     with open(template, "r") as archivo:

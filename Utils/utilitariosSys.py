@@ -1,5 +1,17 @@
 import sys
 import logging
+from pathlib import Path
+
+def is_archivo_vacio(archivo):
+    """
+        Verifica si el archivo ingresado como argumento esta vacio o no
+        ===============================================================
+    """
+    path_archivo = Path(archivo)
+    if not path_archivo.is_file():
+        #print(f"Error: '{archivo}' no es archivo o no existe")
+        return False
+    return path_archivo.stat().st_size == 0
 
 def crea_logger(config):
     """ Función para crear el logger de la aplicación
@@ -83,6 +95,7 @@ def get_parametros_default(config,logger):
 
 def get_parametros_tbs(config,logger,indice):
     logger.debug("Obteniendo parámetros de tablespaces desde el archivo de configuración.")
+    tablespace = str('')
     try:
         habilita = config.getboolean('Tablespaces','habilita_cambio')
         if habilita and indice:
