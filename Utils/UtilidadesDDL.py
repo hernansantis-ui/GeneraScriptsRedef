@@ -42,7 +42,7 @@ def verificar_largo_indices(sql_dir,script_300,dict_indices,logger):
         if len(indice) > LARGO_INDICE:
             # Si el largo es mayor a LARGO_INDICE, debemos eliminar los
             # últimos 2 caracteres y reemplazar por un contador
-            valor_indice = f'{indice[0:-2]}{contador:02d}'
+            valor_indice = f'{indice[0:-4]}{contador:02d}'
             contador +=1
         else:
             valor_indice = indice            
