@@ -1,6 +1,6 @@
 import sys
 import re
-from turtle import clear
+
 def generador_archivo(nombre_archivo, logger):
     logger.debug(f'Generador para leer el archivo DDL {nombre_archivo}')   
     with open(nombre_archivo, 'r') as archivo:
@@ -215,13 +215,34 @@ def agrega_compresion_indice(sql_dir,archivo_redef,logger):
     archivo_salida = sql_dir /"temporal.sql"
     try:
         lineas_archivos = generador_archivo(archivo_redef,logger)
+#   1.- Primero buscamos CREATE INDEX o CREATE UNIQUE 
+#   2.- Si es CREATE INDEX buscamos TABLESPACE y agregamos la compresión
+#   3.- Si es CREATE UNIQUE buscamos cuantas columnas tiene el indice
+#   4.- Si tiene mas de una buscamos TABLESPACE y agregamos la compresion
+#   5.- Si solo tiene una volvemos al punto 1.
+
+        buscar_tablespace = False
+
         patron=r'.*(TABLESPACE\s*\w+)'
         with open(archivo_salida,'w') as archivo:
             for linea in lineas_archivos:
-                match = re.search(patron,linea)
-                if match:
-                    grupo = match.group(0)
-                    linea = linea.replace(grupo,f'COMPRESS ADVANCED LOW \n{grupo}')
+                match linea:
+                    case 'CREATE INDEX':
+                        pass
+                    case 'CREATE UNIQUE':
+                        pass
+                    case _:
+                        pass
+                if 'CREATE INDEX' in linea:
+                   buscar_tablespace = True
+                   continue
+                if buscar_tablespace:
+                    patron=r'.*(TABLESPACE\s*\w+)' 
+                    match = re.search(patron,linea)
+                    if match:
+                        grupo = match.group(0)
+                        linea = linea.replace(grupo,f'COMPRESS ADVANCED LOW \n{grupo}')
+                        buscar_tablespace = False
                 archivo.write(linea+'\n')
         archivo_redef.unlink()
         archivo_salida.rename(archivo_redef)
