@@ -1,6 +1,6 @@
 import sys
 import re
-from turtle import clear
+
 def generador_archivo(nombre_archivo, logger):
     logger.debug(f'Generador para leer el archivo DDL {nombre_archivo}')   
     with open(nombre_archivo, 'r') as archivo:
