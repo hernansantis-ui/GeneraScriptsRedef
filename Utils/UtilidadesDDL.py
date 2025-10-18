@@ -243,7 +243,7 @@ def agrega_compresion_indice(sql_dir,archivo_redef,logger):
                         if comprimir:
                             grupo = match_obj.group(0)
                             linea = linea.replace(grupo,f'COMPRESS ADVANCED LOW \n{grupo}')
-                            comprimir = False
+                            comprimir = True
                     case _:
                         pass
                             
