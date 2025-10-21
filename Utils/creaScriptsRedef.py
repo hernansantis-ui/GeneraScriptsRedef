@@ -66,7 +66,7 @@ def crea_script_redef_300(dir_proyecto,sql_dir,config,archivo_salida,esquema, ta
     else:
         logger.debug(f'Scripts de redefinición {archivo_salida} creados correctamente ')  
 
-def crea_script_redef_01(dir_proyecto,sql_dir,config,archivo_salida, esquema, tabla,columnas,logger):
+def crea_script_redef_100(dir_proyecto,sql_dir,config,archivo_salida, esquema, tabla,columnas,logger):
     """ Función para crear el script de redefinicion 01_CREA_I...sql
     """
     logger.debug(f"Creando scripts de redefinición {archivo_salida} ")
@@ -132,17 +132,17 @@ def crea_scripts_redefinicion(dir_proyecto,sql_dir,config,base_dato, esquema, ta
         - Crear scripts de redefinición por cada tabla desde DDL
     """
     SCRIPTS = [
-        ("00", "CAN_REDEF"),
-        ("01", "CREA_I"),
-        ("02", "START"),
+        ("000", "CAN_REDEF"),
+        ("100", "CREA_I"),
+        ("200", "START"),
         ("300", "CREA_INDEX_I"),
         ("303", "REGISTER"),
         ("309", "COPY"),
-        ("04", "SYNCHRONIZE"),
-        ("05", "FINISH"),
-        ("06", "ABORT"),
-        ("07", "ROLLBACK"),
-        ("99", "DROP"),
+        ("400", "SYNCHRONIZE"),
+        ("500", "FINISH"),
+        ("600", "ABORT"),
+        ("700", "ROLLBACK"),
+        ("990", "DROP"),
     ]
 
     TEMPLATE_DIR = dir_proyecto/'templates'
@@ -155,8 +155,8 @@ def crea_scripts_redefinicion(dir_proyecto,sql_dir,config,base_dato, esquema, ta
             if orden == '300':
                 script_300 = archivo_script
             template = TEMPLATE_DIR/f"ESQ_{tipo}.txt"
-            if orden == '01':
-                crea_script_redef_01(
+            if orden == '100':
+                crea_script_redef_100(
                     dir_proyecto,
                     sql_dir,
                     config,

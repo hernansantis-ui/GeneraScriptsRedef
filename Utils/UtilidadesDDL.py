@@ -217,21 +217,10 @@ def agrega_compresion_indice(sql_dir,archivo_redef,logger):
     comprimir = False     # Indica que se debe comprimir
     fin_bloque = True    # Indica que se acaba el bloque (CREATE... )
     try:
-        lineas_archivos = generador_archivo(archivo_redef,logger)
-#   1.- Primero buscamos CREATE INDEX o CREATE UNIQUE 
-#   2.- Si es CREATE INDEX buscamos TABLESPACE y agregamos la compresión
-#   3.- Si es CREATE UNIQUE buscamos cuantas columnas tiene el indice
-#   4.- Si tiene mas de una buscamos TABLESPACE y agregamos la compresion
-#   5.- Si solo tiene una volvemos al punto 1.
-
-        buscar_tablespace = False
-
-        patron=r'.*(TABLESPACE\s*\w+)'
         lineas_archivo = generador_archivo(archivo_redef,logger)
         with open(archivo_salida,'w') as archivo:
             for linea in lineas_archivo:
                 match linea :
-#                    case s if match_obj := re.search(r"\s*CREATE\s*(UNIQUE)\s*INDEX\s*(\(\w.*(,\w.*)?\))", s ):
                     case s if match_obj := re.search(r"\s*CREATE\s*(UNIQUE)\s*INDEX\s*((\((\w.*(,\w.*)?)\))?)", s ):
                         unique_index = True
                         fin_bloque = False
@@ -249,11 +238,11 @@ def agrega_compresion_indice(sql_dir,archivo_redef,logger):
                         if not fin_bloque:
                             unique_index = False
                             fin_bloque = True
+                            comprimir = False
                     case s if (match_obj := re.search(r'.*(TABLESPACE\s*)(\w+)',s)):
                         if comprimir:
                             grupo = match_obj.group(0)
                             linea = linea.replace(grupo,f'COMPRESS ADVANCED LOW \n{grupo}')
-                            comprimir = True
                     case _:
                         pass
                             
