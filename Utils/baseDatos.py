@@ -1,8 +1,10 @@
 import oracledb
 import sys
+import logging
+logger = logging.getLogger('main.baseDdatos')
 
 
-def conecta_db(config,logger):
+def conecta_db(config):
     """Función para conectar a la base de datos Oracle usando los parámetros del archivo de configuración."""
     logger.debug("Iniciando conexión a la base de datos.")      
 
@@ -24,8 +26,8 @@ def conecta_db(config,logger):
         logger.critical(f"Error inesperado al conectar a la base de datos: {str(e)}")
         sys.exit(1) 
 
-def crea_script_tabla_from_db(config,esquema, tabla, archivo_salida,logger):
-    conexion = conecta_db(config,logger)
+def crea_script_tabla_from_db(config,esquema, tabla, archivo_salida):
+    conexion = conecta_db(config)
     cursor = conexion.cursor()
     cursor.execute(
         """ 
@@ -67,7 +69,7 @@ def crea_script_tabla_from_db(config,esquema, tabla, archivo_salida,logger):
         archivo.writelines(lista_comentarios)
         archivo.write('EXIT')
 
-def obtener_lista_indices(conexion,esquema,tabla,logger):
+def obtener_lista_indices(conexion,esquema,tabla):
     cursor = conexion.cursor()
 
     cursor.execute(
@@ -80,8 +82,8 @@ def obtener_lista_indices(conexion,esquema,tabla,logger):
     lista = [l[0] for l in resultado]
     return lista
 
-def crea_script_indices_from_db(config, esquema, tabla, archivo_salida,logger):
-    conexion = conecta_db(config,logger)
+def crea_script_indices_from_db(config, esquema, tabla, archivo_salida):
+    conexion = conecta_db(config)
     parallel = config.getint('Tablespaces','paralelo')
     cursor = conexion.cursor()
     cursor.execute(

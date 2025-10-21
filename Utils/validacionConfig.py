@@ -1,11 +1,14 @@
 
+import logging
+logger = logging.getLogger('main.validacionconfiguracion')
+
 class ConfigError(Exception):
     """Excepción personalizada para errores de configuración."""
     def __init__(self, message):
         self.message = message
         super().__init__(self.message)    
 
-def valida_seccion_default(config,logger):
+def valida_seccion_default(config):
     """ Valida que el archivo de configuración tenga la opciones 
             - acceso_base con valor no nulo
             - base_dato  con valor no nulo
@@ -44,7 +47,7 @@ def valida_seccion_default(config,logger):
         logger.critical('Corrija el archivo redefinition.cfg y vuelva a ejecutar el programa')
         raise SystemExit()  
     
-def  valida_secciones(config,logger):
+def  valida_secciones(config):
     """ Valida que el archivo de configuración tenga las secciones esperadas """
     logger.debug('Validando secciones del archivo redefinition.cfg')
 
@@ -66,7 +69,7 @@ def  valida_secciones(config,logger):
     else:
         logger.debug('Secciones del archivo redefinition.cfg validadas correctamente')        
 
-def valida_seccion_db(config,logger):
+def valida_seccion_db(config):
     """ Valida la sección [Database] del archivo redefinition.cfg """   
     logger.debug('Validando sección [Database] del archivo redefinition.cfg')
 
@@ -118,7 +121,7 @@ def valida_seccion_db(config,logger):
     else:
         logger.info('Sección [Database] del archivo redefinition.cfg validada correctamente')
 
-def valida_seccion_tablas(config,logger):
+def valida_seccion_tablas(config):
     """ Valida la sección [Tablas] del archivo redefinition.cfg """
     logger.debug('Validando sección [Tablas] del archivo redefinition.cfg')  
 
@@ -150,7 +153,7 @@ def valida_seccion_tablas(config,logger):
     else:
         logger.debug('Sección [Tablas] del archivo redefinition.cfg validada correctamente')  
 
-def valida_seccion_tablespaces(config,logger):
+def valida_seccion_tablespaces(config):
     logger.debug('Validando sección [Tablespaces] del archivo redefinition.cfg') 
     l_error = False
     opciones_ts= ['habilita_cambio','tablespace_tabla','tablespace_indice','paralelo']
@@ -182,24 +185,24 @@ def valida_seccion_tablespaces(config,logger):
     else:
         logger.debug('Sección [Tablespaces] del archivo redefinition.cfg validada correctamente') 
    
-def valida_archivo_config(config,logger):
+def valida_archivo_config(config):
 
     """ Valida el archivo de configuración redefinition.cfg """
 
     logger.debug(f'Validando archivo de configuración ')
     
     # Validamos que redefinition.cfg tenga las secciones esperadas
-    valida_secciones(config,logger)
+    valida_secciones(config)
 
     # Validamos la seccion [default], las opciones y sus valores
-    valida_seccion_default(config,logger)
+    valida_seccion_default(config)
 
     # Validamos la seccion [Database], las  opciones y sus valores
-    valida_seccion_db(config,logger)
+    valida_seccion_db(config)
 
     # Validamos la sección [Tablas]
-    valida_seccion_tablas(config,logger)
+    valida_seccion_tablas(config)
 
     # Validamos la sección [Tablespaces]
-    valida_seccion_tablespaces(config,logger)
+    valida_seccion_tablespaces(config)
     logger.info(f'Archivo de configuración validado')

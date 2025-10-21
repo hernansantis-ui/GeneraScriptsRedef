@@ -1,16 +1,18 @@
 import sys
 import re
+import logging
+logger = logging.getLogger('main.trabajaDDLs')
 
-def generador_archivo(nombre_archivo, logger):
+def generador_archivo(nombre_archivo):
     logger.debug(f'Generador para leer el archivo DDL {nombre_archivo}')   
     with open(nombre_archivo, 'r') as archivo:
         for linea in archivo:
             yield linea.strip()
 
-def obtener_dict_indices(script_300,esquema,logger):
+def obtener_dict_indices(script_300,esquema):
     logger.debug(f'{esquema=}, {script_300}')
     dict_indices={}
-    lineas_archivo = generador_archivo(script_300,logger)
+    lineas_archivo = generador_archivo(script_300)
     patron = rf'{esquema}\.I_(\$|\w+)+'   
     for linea in lineas_archivo:
         match = re.search(patron,linea)
@@ -20,12 +22,12 @@ def obtener_dict_indices(script_300,esquema,logger):
     
     return dict_indices
 
-def modificar_script_300(sql_dir,script_300,dict_indices,logger):
-    pass
+def modificar_script_300(sql_dir,script_300,dict_indices):
+    
     logger.debug('Modificamos el script 300 con los nuevos nombres de indices')
     archivo_salida = sql_dir/'temporal.sql'
 
-    lineas_archivo = generador_archivo(script_300,logger)
+    lineas_archivo = generador_archivo(script_300)
     with open(archivo_salida,'w') as archivo:
         for linea in lineas_archivo:
             for key,indice in dict_indices.items():
@@ -35,7 +37,7 @@ def modificar_script_300(sql_dir,script_300,dict_indices,logger):
     archivo_salida.rename(script_300)
 
 
-def verificar_largo_indices(sql_dir,script_300,dict_indices,logger):
+def verificar_largo_indices(sql_dir,script_300,dict_indices):
     LARGO_INDICE=28
     contador = 1
     for indice in dict_indices.keys():
@@ -48,10 +50,10 @@ def verificar_largo_indices(sql_dir,script_300,dict_indices,logger):
             valor_indice = indice            
         dict_indices[indice]=valor_indice    
     if contador > 1 :    # Algun indice resulto mayor al LARGO_INDICE
-        modificar_script_300(sql_dir,script_300,dict_indices,logger)        
+        modificar_script_300(sql_dir,script_300,dict_indices)        
     return dict_indices
 
-def llena_template_303(sql_dir,esquema, tabla, dict_indices, archivo_salida, template, logger):
+def llena_template_303(sql_dir,esquema, tabla, dict_indices, archivo_salida, template):
     logger.debug('Llenamos el template 303')
     try:
         with open(template, "r") as archivo:
@@ -72,14 +74,14 @@ def llena_template_303(sql_dir,esquema, tabla, dict_indices, archivo_salida, tem
         )
         sys.exit(1)
 
-def separa_ddl_indices(ddls_dir,esquema, tabla, archivo_salida, logger):
+def separa_ddl_indices(ddls_dir,esquema, tabla, archivo_salida):
     """ Función para separar el DDL de los índices en un archivos distinto
     """
     logger.debug(f'Separando DDL de los índices de la tabla {tabla} en un archivo distinto')   
     archivo_entrada= ddls_dir / f"{esquema}.{tabla}.sql"   
  
     try:
-        lineas = generador_archivo(archivo_entrada, logger)
+        lineas = generador_archivo(archivo_entrada)
         with open(archivo_salida, 'w') as archivo:
             es_ddl_indice = False
             for linea in lineas:
@@ -95,13 +97,13 @@ def separa_ddl_indices(ddls_dir,esquema, tabla, archivo_salida, logger):
     else:
         logger.debug(f'DDL de los índices de la tabla {tabla} separados correctamente en un archivo distinto')
 
-def separa_ddl_tabla(ddls_dir,esquema, tabla, archivo_salida, logger):
+def separa_ddl_tabla(ddls_dir,esquema, tabla, archivo_salida):
     """ Función para separar el DDL de la tabla del archivo entregado
     """
     logger.debug(f'Separando DDL de la tabla {tabla}  y comentarios')   
     archivo_entrada= ddls_dir/ f"{esquema}.{tabla}.sql"    
     try:
-        lineas = generador_archivo(archivo_entrada, logger)
+        lineas = generador_archivo(archivo_entrada)
         with open(archivo_salida, 'w') as archivo:
             es_ddl_tabla = True
             for linea in lineas:
@@ -121,14 +123,14 @@ def separa_ddl_tabla(ddls_dir,esquema, tabla, archivo_salida, logger):
     else:
         logger.debug(f'DDL de la tabla {tabla} y DDL de los índices separados correctamente en archivos distintos') 
 
-def reemplaza_tabs_comillas(sql_dir,esquema, tabla, archivo_redef, logger):
+def reemplaza_tabs_comillas(sql_dir,esquema, tabla, archivo_redef):
     """ Función para reemplazar los tab por espacios 
         y eliminar las comillas en el script de redefinicion de la tabla
     """
     logger.debug(f'Reemplazando tab por espacios en el archivo {archivo_redef}')   
     archivo_salida =  sql_dir/f"temporal.sql"   
     try:
-        lineas = generador_archivo(archivo_redef, logger)
+        lineas = generador_archivo(archivo_redef)
         with open(archivo_salida, 'w') as archivo:
             for linea in lineas:
                 linea = linea.expandtabs(tabsize=1)  # Reemplaza tab por 1 espacios
@@ -141,12 +143,12 @@ def reemplaza_tabs_comillas(sql_dir,esquema, tabla, archivo_redef, logger):
     archivo_salida.rename(archivo_redef)
     logger.debug(f'Tab y comillas reemplazados por espacios en el archivo {archivo_redef} correctamente')
 
-def cambia_tablespace(sql_dir,archivo_redef, tablespace, logger):
+def cambia_tablespace(sql_dir,archivo_redef, tablespace):
     logger.debug(f"Cambiando tablespace a {tablespace} en el DDL del objeto.")
     #   Buscamos la palabra TABLESPACE y cambiamos el tablespace por el indicado
     archivo_salida =  sql_dir/"temporal.sql"   
     try:
-        lineas_archivo = generador_archivo(archivo_redef,logger)
+        lineas_archivo = generador_archivo(archivo_redef)
         #patron = r".*(TABLESPACE\s*)(\w|\w(_\w)*)"
         patron=r'.*(TABLESPACE\s*)(\w+)'
         with open(archivo_salida,'w') as archivo:
@@ -164,12 +166,12 @@ def cambia_tablespace(sql_dir,archivo_redef, tablespace, logger):
         logger.critical(f"Error al cambiar tablespace en el DDL: {str(e)}")
         sys.exit(1)
 
-def encripta_columnas(sql_dir,archivo_redef,columnas, logger):
+def encripta_columnas(sql_dir,archivo_redef,columnas):
     logger.debug(f"Incorporando encriptación en las columnas: {columnas}")
     #   Buscamos las columnas en el DDL y les incorporamos la cláusula de encriptación
     archivo_salida = sql_dir / 'temporal.sql'
     try:
-        lineas_archivo = generador_archivo(archivo_redef,logger)
+        lineas_archivo = generador_archivo(archivo_redef)
         with open(archivo_salida,'w') as archivo: 
             for linea in lineas_archivo:
                 for col in columnas:
@@ -188,11 +190,11 @@ def encripta_columnas(sql_dir,archivo_redef,columnas, logger):
         )
         sys.exit(1)
 
-def cambia_nombre_a_interino(sql_dir,archivo_redef,esquema,logger):
+def cambia_nombre_a_interino(sql_dir,archivo_redef,esquema):
     logger.debug(f"Cambiando nombre a interino")
     archivo_salida = sql_dir / "temporal.sql"
     try:
-        lineas_archivo = generador_archivo(archivo_redef,logger)
+        lineas_archivo = generador_archivo(archivo_redef)
         patron = fr'{esquema}\.'
         with open(archivo_salida,'w') as archivo:
             for linea in lineas_archivo:
@@ -209,7 +211,7 @@ def cambia_nombre_a_interino(sql_dir,archivo_redef,esquema,logger):
         logger.critical(f"Error al incorporar encriptación en el DDL de la tabla: {str(e)}")
         sys.exit(1)
 
-def agrega_compresion_indice(sql_dir,archivo_redef,logger):
+def agrega_compresion_indice(sql_dir,archivo_redef):
     logger.debug("Incorporando compresión avanzada en el DDL de índices.")
     #   Buscamos la palabra TABLESPACE e incorporamos la compresion de indices antes
     archivo_salida = sql_dir /"temporal.sql"
@@ -217,7 +219,7 @@ def agrega_compresion_indice(sql_dir,archivo_redef,logger):
     comprimir = False     # Indica que se debe comprimir
     fin_bloque = True    # Indica que se acaba el bloque (CREATE... )
     try:
-        lineas_archivo = generador_archivo(archivo_redef,logger)
+        lineas_archivo = generador_archivo(archivo_redef)
         with open(archivo_salida,'w') as archivo:
             for linea in lineas_archivo:
                 match linea :
@@ -254,13 +256,13 @@ def agrega_compresion_indice(sql_dir,archivo_redef,logger):
         logger.critical(f"Error al incorporar compresión en el DDL de índices: {str(e)}")
         raise SystemError()
 
-def agrega_compresion_tabla(sql_dir, archivo_redef, logger):
+def agrega_compresion_tabla(sql_dir, archivo_redef):
     logger.debug("Incorporando compresión avanzada en el DDL de tabla.")
     #   Buscamos la palabra TABLESPACE e incorporamos la compresion de tabla antes
     archivo_salida = sql_dir /"temporal.sql"
 
     try:
-        lineas_archivos = generador_archivo(archivo_redef,logger)
+        lineas_archivos = generador_archivo(archivo_redef)
         patron=r'.*(TABLESPACE\s*\w+)'
         with open(archivo_salida,'w') as archivo:
             for linea in lineas_archivos:
@@ -278,11 +280,11 @@ def agrega_compresion_tabla(sql_dir, archivo_redef, logger):
         raise SystemError()
 
 
-def agrega_paralelismo(sql_dir,archivo_redef,parallel,logger):
+def agrega_paralelismo(sql_dir,archivo_redef,parallel):
     logger.debug("Agregando sentencias para ejecutar paralelismo en la creacion de los indices")
     archivo_salida = sql_dir /'temporal.sql'
     try:
-        lineas_archivo= generador_archivo(archivo_redef,logger)
+        lineas_archivo= generador_archivo(archivo_redef)
         with open(archivo_salida,'w') as archivo:
             archivo.write(f'ALTER SESSION FORCE PARALLEL DML parallel {parallel};\n')
             archivo.write(f'ALTER SESSION FORCE PARALLEL DDL parallel {parallel};\n')
@@ -296,16 +298,16 @@ def agrega_paralelismo(sql_dir,archivo_redef,parallel,logger):
         logger.critical(f'Error al agregar paralelismo el script de indices (300): {str(e)}')
         raise SystemError()
 
-def crea_script_from_ddl(ddls_dir,sql_dir,archivo_tabla, esquema, tabla,logger,indices):      
+def crea_script_from_ddl(ddls_dir,sql_dir,archivo_tabla, esquema, tabla,indices):      
     """ Función para crear los scripts de redefinición de tablas los DDL's de las tablas
         - Crea script de redefinición por cada tabla desde DDL
         - Crea script de redefinicion de  indices  para la tabla desde DDL
     """
     try:
         if not indices:
-            separa_ddl_tabla(ddls_dir,esquema, tabla, archivo_tabla, logger)
+            separa_ddl_tabla(ddls_dir,esquema, tabla, archivo_tabla)
         else:
-            separa_ddl_indices(ddls_dir,esquema, tabla, archivo_tabla, logger)
+            separa_ddl_indices(ddls_dir,esquema, tabla, archivo_tabla)
     except Exception as e:
         logger.critical(f'Error inesperado al crear los scripts {archivo_tabla}: {e}')
         raise SystemExit()  
