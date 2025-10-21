@@ -213,6 +213,9 @@ def agrega_compresion_indice(sql_dir,archivo_redef,logger):
     logger.debug("Incorporando compresión avanzada en el DDL de índices.")
     #   Buscamos la palabra TABLESPACE e incorporamos la compresion de indices antes
     archivo_salida = sql_dir /"temporal.sql"
+    unique_index = False  # Indica bloque Unique Index
+    comprimir = False     # Indica que se debe comprimir
+    fin_bloque = True    # Indica que se acaba el bloque (CREATE... )
     try:
         lineas_archivos = generador_archivo(archivo_redef,logger)
 #   1.- Primero buscamos CREATE INDEX o CREATE UNIQUE 
@@ -224,25 +227,36 @@ def agrega_compresion_indice(sql_dir,archivo_redef,logger):
         buscar_tablespace = False
 
         patron=r'.*(TABLESPACE\s*\w+)'
+        lineas_archivo = generador_archivo(archivo_redef,logger)
         with open(archivo_salida,'w') as archivo:
-            for linea in lineas_archivos:
-                match linea:
-                    case 'CREATE INDEX':
-                        pass
-                    case 'CREATE UNIQUE':
-                        pass
+            for linea in lineas_archivo:
+                match linea :
+#                    case s if match_obj := re.search(r"\s*CREATE\s*(UNIQUE)\s*INDEX\s*(\(\w.*(,\w.*)?\))", s ):
+                    case s if match_obj := re.search(r"\s*CREATE\s*(UNIQUE)\s*INDEX\s*((\((\w.*(,\w.*)?)\))?)", s ):
+                        unique_index = True
+                        fin_bloque = False
+                        if (match_obj := re.search(r"(\(\w.*(,\w.*)?\))",s)):
+                            columnas = match_obj.group(0).strip('(').strip(')').split(',')
+                            comprimir = len(columnas) > 1
+                    case s if (match_obj := re.search(r"(\(\w.*(,\w.*)?\))",s)):
+                        if unique_index :
+                            columnas = match_obj.group(0).strip('(').strip(')').split(',')
+                            comprimir = len(columnas) > 1
+                    case s if (match_obj := re.search(r"\s*CREATE\s*INDEX.*",s)):
+                        fin_bloque = False
+                        comprimir = True  
+                    case s if (match_obj := re.search(r'.*NOPARALLEL;', s)):
+                        if not fin_bloque:
+                            unique_index = False
+                            fin_bloque = True
+                    case s if (match_obj := re.search(r'.*(TABLESPACE\s*)(\w+)',s)):
+                        if comprimir:
+                            grupo = match_obj.group(0)
+                            linea = linea.replace(grupo,f'COMPRESS ADVANCED LOW \n{grupo}')
+                            comprimir = True
                     case _:
                         pass
-                if 'CREATE INDEX' in linea:
-                   buscar_tablespace = True
-                   continue
-                if buscar_tablespace:
-                    patron=r'.*(TABLESPACE\s*\w+)' 
-                    match = re.search(patron,linea)
-                    if match:
-                        grupo = match.group(0)
-                        linea = linea.replace(grupo,f'COMPRESS ADVANCED LOW \n{grupo}')
-                        buscar_tablespace = False
+                            
                 archivo.write(linea+'\n')
         archivo_redef.unlink()
         archivo_salida.rename(archivo_redef)

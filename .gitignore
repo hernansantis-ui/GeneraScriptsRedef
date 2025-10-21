@@ -1,5 +1,5 @@
-/SQL/**
-/logs/redefinition.log
-/DDLS/**
+SQL/**
+logs/redefinition.log
+DDLS/**
 Utils/__pycache__
 prueba.py
